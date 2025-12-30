@@ -12,13 +12,16 @@ import { List } from "src/list/list.entity";
 @Entity()
 export class Board {
     @PrimaryGeneratedColumn() 
-       id: string;
+    id: number;
 
     @Column()
     title: string;
 
+    @Column({ nullable: true })
+    description?: string;
+
     @ManyToOne(() => User, (user) => user.boards)
-    user: User;
+    owner: User;
 
     @OneToMany(() => List, (list) => list.board)
     lists: List[];

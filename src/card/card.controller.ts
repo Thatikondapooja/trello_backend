@@ -1,45 +1,38 @@
-import {
-    Controller,
-    Post,
-    Get,
-    Patch,
-    Body,
-    Param,
-    UseGuards,
-    Req,
-} from "@nestjs/common";
-import { CardsService } from "./card.service";
+import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
+import { CardsService } from "./card.service";
+import { CreateCardDto } from "./CardDto";
+import { MoveCardDto } from "./MoveDto";
 
-@Controller()
+@Controller("cards")
 @UseGuards(JwtAuthGuard)
 export class CardsController {
     constructor(private cardsService: CardsService) { }
 
     // POST /cards
-    @Post("cards")
-    createCard(
-        @Body("title") title: string,
-        @Body("listId") listId: string,
-        @Req() req: any,
-    ) {
-        return this.cardsService.createCard(title, listId,req.user);
+    @Post()
+    createCard(@Body() dto: CreateCardDto, @Req() req) {
+        return this.cardsService.createCard(dto, req.user);
     }
 
-    // GET /lists/:listId/cards
-    @Get("lists/:listId/cards")
-    getCards(@Param("listId") listId: string) {
-        return this.cardsService.getCardsByList(listId);
+    // GET /cards/list/:listId
+    @Get("list/:listId")
+    getCards(@Param("listId") listId: number) {
+        return this.cardsService.getCardsByList((listId));
     }
 
     // PATCH /cards/:cardId/move
-    @Patch("cards/:cardId/move")
+    @Patch(":cardId/move")
     moveCard(
-        @Param("cardId") cardId: string,
-        @Body("toListId") toListId: string,
-        @Req() req: any,
+        @Param("cardId") cardId: number,
+        @Body() dto: MoveCardDto,
+        @Req() req,
     ) {
-        return this.cardsService.moveCard(cardId, toListId,req.user);
+        return this.cardsService.moveCard(
+            (cardId),
+            dto.toListId,
+            req.user,
+        );
     }
 
     // GET /cards

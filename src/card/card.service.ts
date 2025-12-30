@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Card } from "./card.entity";
 import { List } from "../list/list.entity";
 import { ActivityService } from "../activity/activity.service";
 import { User } from "../user/user.entity";
+import { CreateCardDto } from "./CardDto";
 
 @Injectable()
 export class CardsService {
@@ -15,13 +16,12 @@ export class CardsService {
         @InjectRepository(List)
         private listRepo: Repository<List>,
 
-        private activityService: ActivityService, // ✅ proper injection
+        private activityService: ActivityService,
     ) { }
 
-    // ✅ CREATE CARD
-    async createCard(title: string, listId: string, user: User) {
+    async createCard(dto: CreateCardDto, user: User) {
         const list = await this.listRepo.findOne({
-            where: { id: listId },
+            where: { id: Number(dto.listId )},
             relations: ["board"],
         });
 
@@ -30,13 +30,12 @@ export class CardsService {
         }
 
         const card = this.cardRepo.create({
-            title,
+            title: dto.title,
             list,
         });
 
         const savedCard = await this.cardRepo.save(card);
 
-        // ✅ LOG ACTIVITY AFTER SAVE
         await this.activityService.log(
             `Card '${savedCard.title}' created in '${list.title}'`,
             list.board,
@@ -46,8 +45,7 @@ export class CardsService {
         return savedCard;
     }
 
-    // ✅ MOVE CARD (DRAG & DROP)
-    async moveCard(cardId: string, toListId: string, user: User) {
+    async moveCard(cardId: number, toListId: number, user: User) {
         const card = await this.cardRepo.findOne({
             where: { id: cardId },
             relations: ["list", "list.board"],
@@ -55,11 +53,6 @@ export class CardsService {
 
         if (!card) {
             throw new NotFoundException("Card not found");
-        }
-
-        // 🚨 SAME LIST CHECK
-        if (card.list.id === toListId) {
-            return card;
         }
 
         const newList = await this.listRepo.findOne({
@@ -72,11 +65,10 @@ export class CardsService {
         }
 
         const oldList = card.list;
-
         card.list = newList;
+
         const updatedCard = await this.cardRepo.save(card);
 
-        // ✅ LOG MOVE ACTIVITY
         await this.activityService.log(
             `Card '${card.title}' moved from '${oldList.title}' to '${newList.title}'`,
             newList.board,
@@ -86,15 +78,13 @@ export class CardsService {
         return updatedCard;
     }
 
-    // GET CARDS OF A LIST
-    async getCardsByList(listId: string) {
+    async getCardsByList(listId: number) {
         return this.cardRepo.find({
             where: { list: { id: listId } },
             order: { createdAt: "ASC" },
         });
     }
 
-    // GET ALL CARDS
     async getAllCards() {
         return this.cardRepo.find({
             relations: ["list"],

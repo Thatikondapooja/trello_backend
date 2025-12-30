@@ -1,24 +1,28 @@
-import { Body, Controller, Get, Injectable, Post, Req, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/JwtAuthGuard';
-import { BoardService } from './board.service';
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
+import { BoardService } from "./board.service";
+import { CreateBoardDto } from "./createBoardDto";
 
-@Controller('boards')
+@Controller("boards")
 @UseGuards(JwtAuthGuard)
 export class BoardController {
-   constructor(private boardservice:BoardService){}
+   constructor(private readonly boardService: BoardService) { }
 
-
+   /* CREATE BOARD */
    @Post()
-   createBoard(@Body("title") title:string,@Req() req:any){
-      const userId=req.user.id;
-      console.log("User ID:", userId);
-       console.log("req.user :", req.user);
-      return this.boardservice.createBoard(title,userId);
+   createBoard(
+      @Body() body: CreateBoardDto,
+      @Req() req: any
+   ) {
+      const userId = req.user.userId; // 👈 comes from JwtStrategy
+      console.log("userId", userId)
+      return this.boardService.createBoard(body, userId);
    }
 
-   @Get()
-   getBoards(@Req() req:any){
-    const userId=req.user.userId
-    return this.boardservice.getBoards(userId);
+   /* GET USER BOARDS */
+   @Get("getboards")
+   getBoards(@Req() req: any) {
+      const userId = req.user.userId;
+      return this.boardService.getBoards(userId);
    }
 }

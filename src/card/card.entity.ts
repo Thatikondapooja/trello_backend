@@ -10,7 +10,7 @@ import { List } from "../list/list.entity";
 @Entity()
 export class Card {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     title: string;

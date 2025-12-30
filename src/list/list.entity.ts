@@ -12,7 +12,7 @@ import { Card } from "src/card/card.entity";
 @Entity()
 export class List {
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     title: string;

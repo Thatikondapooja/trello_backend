@@ -3,27 +3,29 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Board } from "./board.entity";
 import { ActivityService } from "../activity/activity.service";
-import { User } from "../user/user.entity";
+import { CreateBoardDto } from "./createBoardDto";
+import { User } from "src/user/user.entity";
 
 @Injectable()
 export class BoardService {
     constructor(
         @InjectRepository(Board)
-        private boardRepo: Repository<Board>,
+        private readonly boardRepo: Repository<Board>,
 
-        private activityService: ActivityService, // ✅ inject activity service
+        private readonly activityService: ActivityService,
     ) { }
 
-    // CREATE BOARD
-    async createBoard(title: string, user: User) {
+    /* CREATE BOARD */
+    async createBoard(dto: CreateBoardDto, user: User) {
         const board = this.boardRepo.create({
-            title,
-            user,
+            title: dto.title,
+            description: dto.description,
+            owner:user // ✅ relation mapping
         });
 
         const savedBoard = await this.boardRepo.save(board);
-
-        // ✅ LOG ACTIVITY AFTER SAVE
+        console.log("savedBoard", savedBoard)
+        // activity log
         await this.activityService.log(
             `Board '${savedBoard.title}' created`,
             savedBoard,
@@ -33,11 +35,11 @@ export class BoardService {
         return savedBoard;
     }
 
-    // GET BOARDS OF USER
-    async getBoards(userId: string) {
+    /* GET USER BOARDS */
+    async getBoards(userId: number) {
         return this.boardRepo.find({
             where: {
-                user: { id: userId }, // ✅ correct ownership check
+                owner: { id: userId },
             },
             order: { createdAt: "DESC" },
         });

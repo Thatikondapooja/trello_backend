@@ -3,8 +3,11 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } f
 
 @Entity()
 export class User{
-    @PrimaryGeneratedColumn()
-    id:string;
+    @PrimaryGeneratedColumn("increment")
+    id:number;
+
+    @Column()
+    FullName:string;
 
     @Column({unique:true})
     email:string;
@@ -12,7 +15,11 @@ export class User{
     @Column()
     password:string;
 
-    @OneToMany(()=> Board, (board)=> board.user)
+    // 🔐 Refresh token (hashed)
+    @Column({ type: "text", nullable: true })
+    refreshToken?: string|null;
+
+    @OneToMany(()=> Board, (board)=> board.owner)
     boards:Board[];
 
     @CreateDateColumn()

@@ -7,8 +7,8 @@ export class AuthController {
     constructor(private authService:AuthService){}
 
     @Post("register")
-    register(@Body() body:{email:string ,password:string}){
-        return this.authService.register(body.email,body.password)
+    register(@Body() body: { FullName:string ,email:string ,password:string}){
+        return this.authService.register(body.FullName,body.email,body.password)
     };
 
     @Post("login")
@@ -22,6 +22,16 @@ export class AuthController {
         return {
             message: "JWT is working",
             user: req.user,
-        };
+        };    
+    } 
+    
+    
+    
+    @Post("refresh")
+    async refresh(@Body() body: { refreshToken: string }) {
+        return this.authService.refresh(body.refreshToken);
     }
+
+
+  
 }

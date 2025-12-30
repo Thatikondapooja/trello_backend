@@ -13,7 +13,7 @@ export class ActivityService {
     ) { }
 
     // ✅ CENTRAL ACTIVITY LOGGER
-    async log(message: string, board: Board, user: User) {
+    async log(message: string, board: Board, user:User) {
         const activity = this.activityRepo.create({
             message,
             board,

@@ -1,33 +1,22 @@
-import {
-    Controller,
-    Post,
-    Get,
-    Body,
-    Param,
-    UseGuards,
-    Req,
-} from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { ListsService } from "./list.service";
+import { CreateListDto } from "./CreateListDto";
+import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
 
-@Controller()
+@Controller("lists")
 @UseGuards(JwtAuthGuard)
 export class ListsController {
     constructor(private listsService: ListsService) { }
 
     // POST /lists
-    @Post("lists")
-    createList(
-        @Body("title") title: string,
-        @Body("boardId") boardId: string,
-        @Req() req: any,
-    ) {
-        return this.listsService.createList(title,boardId,req.user);
+    @Post()
+    createList(@Req() req, @Body() dto: CreateListDto) {
+        return this.listsService.createList(dto, req.user);
     }
 
     // GET /boards/:boardId/lists
-    @Get("boards/:boardId/lists")
-    getLists(@Param("boardId") boardId: string) {
-        return this.listsService.getListsByBoard(boardId);
+    @Get("boards/:boardId")
+    getLists(@Param("boardId") boardId: number) {
+        return this.listsService.getListsByBoard((boardId));
     }
 }
