@@ -20,4 +20,7 @@ export class Card {
 
     @CreateDateColumn()
     createdAt: Date;
+    
+    @Column({ type: "int" })
+    position: number; // 👈 CARD ORDER
 }

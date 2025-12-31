@@ -6,9 +6,12 @@ import { List } from "../list/list.entity";
 import { ActivityService } from "../activity/activity.service";
 import { User } from "../user/user.entity";
 import { CreateCardDto } from "./CardDto";
+import { ReorderCardDto } from "./reorder-card.dto";
 
 @Injectable()
 export class CardsService {
+   
+     
     constructor(
         @InjectRepository(Card)
         private cardRepo: Repository<Card>,
@@ -28,10 +31,12 @@ export class CardsService {
         if (!list) {
             throw new NotFoundException("List not found");
         }
+        const position = list.cards.length; // last position
 
         const card = this.cardRepo.create({
             title: dto.title,
             list,
+            position,
         });
 
         const savedCard = await this.cardRepo.save(card);
@@ -91,4 +96,18 @@ export class CardsService {
             order: { createdAt: "ASC" },
         });
     }
+    async reorderCards(dto: ReorderCardDto) {
+        const { listId, orderedCardIds } = dto;
+
+        for (let i = 0; i < orderedCardIds.length; i++) {
+            await this.cardRepo.update(
+                { id: orderedCardIds[i], list: { id: listId } },
+                { position: i }
+            );
+        }
+
+        return { success: true };
+    }
+
+
 }

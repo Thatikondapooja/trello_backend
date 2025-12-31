@@ -3,6 +3,7 @@ import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
 import { CardsService } from "./card.service";
 import { CreateCardDto } from "./CardDto";
 import { MoveCardDto } from "./MoveDto";
+import { ReorderCardDto } from "./reorder-card.dto";
 
 @Controller("cards")
 @UseGuards(JwtAuthGuard)
@@ -40,4 +41,9 @@ export class CardsController {
     getAllCards() {
         return this.cardsService.getAllCards();
     }
+    @Patch("reorder")
+    reorderCards(@Body() dto: ReorderCardDto) {
+        return this.cardsService.reorderCards(dto);
+    }
+
 }
