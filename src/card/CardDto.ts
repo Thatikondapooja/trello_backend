@@ -1,12 +1,23 @@
- import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateCardDto {
-     @IsNotEmpty()
+    @IsNotEmpty()
+    @IsString()
     title: string;
 
-
-    @Type(() => Number)   // 🔥 REQUIRED
+    @Type(() => Number)
     @IsNumber()
     listId: number;
+
+    @IsOptional()
+    @IsString()
+    description?: string;
+
+    @IsOptional()
+    @Type(() => Date)
+    dueDate?: Date;
+
+    @IsOptional()
+    label?: string[];
 }

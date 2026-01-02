@@ -8,6 +8,7 @@ import { User } from "../user/user.entity";
 import { CreateCardDto } from "./CardDto";
 import { ReorderCardDto } from "./reorder-card.dto";
 
+
 @Injectable()
 export class CardsService {
    
@@ -24,22 +25,26 @@ export class CardsService {
 
     async createCard(dto: CreateCardDto, user: User) {
         const list = await this.listRepo.findOne({
-            where: { id: Number(dto.listId )},
-            relations: ["board"],
+            where: { id: dto.listId },
+            relations: ["board", "cards"],
         });
 
         if (!list) {
             throw new NotFoundException("List not found");
         }
-        const position = list.cards.length; // last position
+
+        const position = list.cards.length;
 
         const card = this.cardRepo.create({
             title: dto.title,
-            list,
+            description: dto.description ?? null,
+            dueDate: dto.dueDate ?? null,
+            labels: dto.label ?? [],
             position,
+            list,
         });
 
-        const savedCard = await this.cardRepo.save(card);
+        const savedCard = await this.cardRepo.save(card); // ✅ Card, not Card[]
 
         await this.activityService.log(
             `Card '${savedCard.title}' created in '${list.title}'`,
@@ -109,5 +114,16 @@ export class CardsService {
         return { success: true };
     }
 
+
+
+async getCardById(cardId:number){
+    const card=await this.cardRepo.findOne({
+        where:{id:cardId},
+        relations:["list"],
+    })
+    if (!card) throw new NotFoundException("Card not found");
+
+    return card;
+}
 
 }

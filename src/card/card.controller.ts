@@ -46,4 +46,9 @@ export class CardsController {
         return this.cardsService.reorderCards(dto);
     }
 
+    @Get(":id")
+    getCard(@Param("id") id:number){
+        return this.cardsService.getCardById(id)
+    }
+
 }
