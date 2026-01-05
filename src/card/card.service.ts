@@ -7,12 +7,12 @@ import { ActivityService } from "../activity/activity.service";
 import { User } from "../user/user.entity";
 import { CreateCardDto } from "./CardDto";
 import { ReorderCardDto } from "./reorder-card.dto";
+import { UpdateCardDto } from "./updateCard";
 
 
 @Injectable()
 export class CardsService {
-   
-     
+
     constructor(
         @InjectRepository(Card)
         private cardRepo: Repository<Card>,
@@ -38,8 +38,8 @@ export class CardsService {
         const card = this.cardRepo.create({
             title: dto.title,
             description: dto.description ?? null,
-            dueDate: dto.dueDate ?? null,
-            labels: dto.label ?? [],
+            dueDate: null,
+            labels: dto.labels ?? [],
             position,
             list,
         });
@@ -125,5 +125,34 @@ async getCardById(cardId:number){
 
     return card;
 }
+
+    async updateCard(cardId: number, dto: UpdateCardDto, user: User) {
+        const card = await this.cardRepo.findOne({
+            where: { id: cardId },
+            relations: ["list", "list.board"],
+        });
+
+        if (!card) throw new NotFoundException("Card not found");
+
+        // Update only provided fields
+        if (dto.title !== undefined) card.title = dto.title;
+        if (dto.description !== undefined) card.description = dto.description;
+        if (dto.dueDate !== undefined) card.dueDate = dto.dueDate? new Date(dto.dueDate):null;
+        if (dto.reminderMinutes !== undefined) card.reminderMinutes = dto.reminderMinutes;
+        
+
+        if (dto.labels !== undefined) card.labels = dto.labels;
+
+        const updatedCard = await this.cardRepo.save(card);
+        console.log("updatedCard", updatedCard)
+        await this.activityService.log(
+            `Card "${card.title}" updated`,
+            card.list.board,
+            user,
+        );
+
+        return updatedCard;
+    }
+
 
 }

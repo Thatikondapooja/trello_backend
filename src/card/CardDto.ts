@@ -19,5 +19,9 @@ export class CreateCardDto {
     dueDate?: Date;
 
     @IsOptional()
-    label?: string[];
+    labels?: { name: string; color: string }[];
+    
+    @IsOptional()
+    reminderMinutes?: number | null; // ✅ REQUIRED
+
 }

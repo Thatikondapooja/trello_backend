@@ -22,8 +22,15 @@ export class Card {
     @Column({ type: "date", nullable: true })
     dueDate: Date | null;
 
-    @Column("text", { array: true, default: [] })
-    labels: string[];
+    @Column({ type: "int", nullable: true })
+    reminderMinutes: number|null;
+
+    @Column({ default: false })
+    reminderSent: boolean
+
+
+    @Column("jsonb", { default: [] })
+    labels: { name: string; color: string }[];
 
     @Column()
     position: number;

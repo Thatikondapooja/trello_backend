@@ -1,13 +1,15 @@
-import { Body, Controller, Get, Param, Patch, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
 import { CardsService } from "./card.service";
 import { CreateCardDto } from "./CardDto";
 import { MoveCardDto } from "./MoveDto";
 import { ReorderCardDto } from "./reorder-card.dto";
+import { UpdateCardDto } from "./updateCard";
 
 @Controller("cards")
 @UseGuards(JwtAuthGuard)
 export class CardsController {
+ 
     constructor(private cardsService: CardsService) { }
 
     // POST /cards
@@ -50,5 +52,15 @@ export class CardsController {
     getCard(@Param("id") id:number){
         return this.cardsService.getCardById(id)
     }
+
+   // PATCH /cards/:id
+@Patch(":id")
+updateCard(
+  @Param("id") id: number,
+  @Body() dto: UpdateCardDto,
+  @Req() req,
+) {
+  return this.cardsService.updateCard(id, dto, req.user);
+}
 
 }
