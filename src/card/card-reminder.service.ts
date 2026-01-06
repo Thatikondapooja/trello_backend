@@ -1,39 +1,48 @@
 import { Injectable } from "@nestjs/common";
-import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository, Not, IsNull } from "typeorm";
+import { Repository } from "typeorm";
 import { Card } from "./card.entity";
+import { MailService } from "src/mail/mail.service";
+import { Cron } from "@nestjs/schedule";
 
 @Injectable()
 export class CardReminderService {
     constructor(
         @InjectRepository(Card)
         private cardRepo: Repository<Card>,
+        private mailService: MailService,
     ) { }
 
-    @Cron("* * * * *") // runs every minute
-    async checkReminders() {
+    @Cron("* * * * *") // every minute
+    async sendReminders() {
         const now = new Date();
 
         const cards = await this.cardRepo.find({
+            relations: [
+                "list",
+                "list.board",
+                "list.board.owner",], // 🔥 IMPORTANT
             where: {
-                dueDate: Not(IsNull()),
-                reminderMinutes: Not(IsNull()),
                 reminderSent: false,
             },
         });
 
         for (const card of cards) {
-            if (!card.dueDate || card.reminderMinutes ==null){
-                continue;
-            }
-            // ✅ THIS IS WHERE YOUR LINE GOES
+            if (!card.dueDate || !card.reminderMinutes) continue;
+
             const reminderTime = new Date(
                 card.dueDate.getTime() - card.reminderMinutes * 60 * 1000
             );
 
             if (now >= reminderTime) {
-                console.log(`🔔 Reminder: ${card.title}`);
+                const email=card.list.board.owner.email
+                console.log("email", email)
+                // 📧 SEND EMAIL
+                await this.mailService.sendReminderEmail(
+                    email,
+                    card.title,
+                    card.dueDate
+                );
 
                 card.reminderSent = true;
                 await this.cardRepo.save(card);

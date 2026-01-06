@@ -154,5 +154,19 @@ async getCardById(cardId:number){
         return updatedCard;
     }
 
+    async markComplete(cardId: number) {
+        const card = await this.cardRepo.findOne({
+            where: { id: cardId },
+        });
+
+        if (!card) {
+            throw new NotFoundException("Card not found");
+        }
+
+        card.isCompleted = true;
+        card.reminderSent = true; // 🔥 stop reminders
+
+        return this.cardRepo.save(card);
+    }
 
 }

@@ -18,6 +18,9 @@ import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from "@nestjs/schedule";
+import { MailModule } from './mail/mail.module';
+import { ChecklistModule } from './checklist/checklist.module';
+
 
 @Module({
   imports: [
@@ -45,6 +48,12 @@ import { ScheduleModule } from "@nestjs/schedule";
     ActivityModule,
 
     AuthModule,
+
+    MailModule,
+
+    ChecklistModule,
+
+    
   ],
   controllers: [ AppController],
   providers: [AppService],
