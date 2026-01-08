@@ -13,39 +13,46 @@ export class MailService {
         pass: process.env.MAIL_PASS,
       },
     });
+
+    this.transporter.verify((error, success) => {
+      if (error) {
+        console.error("❌ Mail server error:", error);
+      } else {
+        console.log("✅ Mail server ready");
+      }
+    });
   }
 
+
   async sendReminderEmail(to: string, cardTitle: string, dueDate: Date) {
+    console.log("📧 Sending email to:", to);
+
     await this.transporter.sendMail({
       from: `"Trello Clone" <${process.env.MAIL_USER}>`,
       to,
       subject: "⏰ Card Reminder",
       html: `
+  <div style="font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 24px;">
+    <div style="max-width: 480px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px;">
+      <h2 style="color: #1a73e8; margin-bottom: 16px;">
+        ⏰ Reminder for your card
+      </h2>
 
-       < div style = "font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 24px;" >
-    <div style="max-width: 480px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px;" >
+      <p style="font-size: 14px; color: #333;">
+        <b>${cardTitle}</b>
+      </p>
 
-    <h2 style="color: #1a73e8; margin-bottom: 16px;" > Reminder for your card
+      <p>Due on: ${dueDate.toDateString()}</p>
 
-    
+      <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
 
-    < p style = "font-size: 13px; color: #c90b0bff;" >
-        <b>${cardTitle}</b> </strong>.
-            </p>
- <p>Due on: ${dueDate.toDateString()}</p>
-            < hr style = "border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-
-            <p style= "font-size: 12px; color: #777;" >
-                If you did not request this, please ignore this email.
-            </p>
-
-                    < p style = "font-size: 12px; color: #777; margin-top: 16px;" >
-              — YourApp Security Team
-    </p>
-
+      <p style="font-size: 12px; color: #777;">
+        This is an automated reminder from Trello Clone.
+      </p>
     </div>
-    </div>
-        `,
+  </div>
+`
+,
     });
 
 

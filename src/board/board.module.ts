@@ -5,9 +5,10 @@ import { BoardController } from './board.controller';
 import { BoardService } from './board.service';
 import { Activity } from 'src/activity/activity.entity';
 import { ActivityModule } from 'src/activity/activity.module';
+import { User } from 'src/user/user.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Board, Activity]), ActivityModule],
+    imports: [TypeOrmModule.forFeature([Board, Activity,User]), ActivityModule],
     controllers: [BoardController],
     providers: [BoardService],
     exports: [TypeOrmModule],

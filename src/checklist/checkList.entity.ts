@@ -1,5 +1,13 @@
-import { Card } from "src/card/card.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    OneToMany,
+    CreateDateColumn,
+} from "typeorm";
+import { Card } from "../card/card.entity";
+import { ChecklistItem } from "./checklist-item.entity";
 
 @Entity()
 export class Checklist {
@@ -12,8 +20,8 @@ export class Checklist {
     @ManyToOne(() => Card, card => card.checklists, { onDelete: "CASCADE" })
     card: Card;
 
-    // @OneToMany(() => ChecklistItem, item => item.checklist)
-    // items: ChecklistItem[];
+    @OneToMany(() => ChecklistItem, item => item.checklist, { cascade: true })
+    items: ChecklistItem[];
 
     @CreateDateColumn()
     createdAt: Date;

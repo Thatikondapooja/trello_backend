@@ -1,14 +1,6 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne,
-    CreateDateColumn,
-    OneToMany,
-} from "typeorm";
-import { List } from "../list/list.entity";
 import { Checklist } from "src/checklist/checklist.entity";
-
+import { List } from "src/list/list.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Card {
@@ -21,18 +13,17 @@ export class Card {
     @Column({ type: "text", nullable: true })
     description: string | null;
 
-    @Column({ type: "date", nullable: true })
+    @Column({ type: "timestamp", nullable: true })
     dueDate: Date | null;
 
-
-    @Column({ nullable: true,default: false })
+    @Column({ default: false })
     isCompleted: boolean;
 
     @Column({ type: "int", nullable: true })
-    reminderMinutes: number|null;
+    reminderMinutes: number | null;
 
     @Column({ default: false })
-    reminderSent: boolean
+    reminderSent: boolean;
 
     @Column("jsonb", { default: [] })
     labels: { name: string; color: string }[];
@@ -43,9 +34,8 @@ export class Card {
     @CreateDateColumn()
     createdAt: Date;
 
-    @ManyToOne(() => List, list => list.cards, { onDelete: "CASCADE" })
+    @ManyToOne(() => List, list => list.cards)
     list: List;
-
     @OneToMany(() => Checklist, checklist => checklist.card)
     checklists: Checklist[];
 

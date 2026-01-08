@@ -129,34 +129,31 @@ async getCardById(cardId:number){
     async updateCard(cardId: number, dto: UpdateCardDto, user: User) {
         const card = await this.cardRepo.findOne({
             where: { id: cardId },
-            relations: ["list", "list.board"],
+            relations: ["list", "list.board", "list.board.owner"],
         });
 
         if (!card) throw new NotFoundException("Card not found");
 
-        // Update only provided fields
         if (dto.title !== undefined) card.title = dto.title;
         if (dto.description !== undefined) card.description = dto.description;
-        if (dto.dueDate !== undefined) card.dueDate = dto.dueDate? new Date(dto.dueDate):null;
-        if (dto.reminderMinutes !== undefined) card.reminderMinutes = dto.reminderMinutes;
-        
-
+        if (dto.dueDate !== undefined)
+            card.dueDate = dto.dueDate ? new Date(dto.dueDate) : null;
+        if (dto.reminderMinutes !== undefined)
+            card.reminderMinutes = dto.reminderMinutes;
         if (dto.labels !== undefined) card.labels = dto.labels;
 
-        const updatedCard = await this.cardRepo.save(card);
-        console.log("updatedCard", updatedCard)
-        await this.activityService.log(
-            `Card "${card.title}" updated`,
-            card.list.board,
-            user,
-        );
-
-        return updatedCard;
+        card.reminderSent = false; // 🔥 IMPORTANT RESET
+        console.log("updateCard", card)
+        return this.cardRepo.save(card);
     }
 
     async markComplete(cardId: number) {
         const card = await this.cardRepo.findOne({
             where: { id: cardId },
+            relations: [
+                "checklists",
+                "checklists.items" // 🔥 REQUIRED
+            ],
         });
 
         if (!card) {

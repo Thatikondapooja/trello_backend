@@ -11,21 +11,31 @@ export class BoardService {
     constructor(
         @InjectRepository(Board)
         private readonly boardRepo: Repository<Board>,
-
+        @InjectRepository(User)
+        private readonly userRepo: Repository<User>,
         private readonly activityService: ActivityService,
     ) { }
 
     /* CREATE BOARD */
-    async createBoard(dto: CreateBoardDto, user: User) {
+    async createBoard(dto: CreateBoardDto, userId: number) {
+        const user = await this.userRepo.findOne({
+            where: { id: userId },
+        });
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
         const board = this.boardRepo.create({
             title: dto.title,
             description: dto.description,
-            owner:user // ✅ relation mapping
+            owner: user, // ✅ REAL USER ENTITY
         });
+        console.log(" board owner", board.owner)
+        console.log("board", board)
 
         const savedBoard = await this.boardRepo.save(board);
         console.log("savedBoard", savedBoard)
-        // activity log
         await this.activityService.log(
             `Board '${savedBoard.title}' created`,
             savedBoard,
@@ -34,6 +44,7 @@ export class BoardService {
 
         return savedBoard;
     }
+
 
     /* GET USER BOARDS */
     async getBoards(userId: number) {

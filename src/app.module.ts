@@ -19,7 +19,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from "@nestjs/schedule";
 import { MailModule } from './mail/mail.module';
-import { ChecklistModule } from './checklist/checklist.module';
+ import { ChecklistModule } from './checklist/checklist.module';
 
 
 @Module({
@@ -51,7 +51,7 @@ import { ChecklistModule } from './checklist/checklist.module';
 
     MailModule,
 
-    ChecklistModule,
+   ChecklistModule,
 
     
   ],

@@ -72,6 +72,7 @@ export class AuthService {
             sub: user.id,
             email: user.email,
         };
+        console.log("user.id", user.id);
 
         console.log("Generated JWT payload:", payload);
 

@@ -1,18 +1,26 @@
-import { Body, Controller, Param, Post, UseGuards } from "@nestjs/common";
-import { ChecklistService } from "./checklist.service";
+import { Body, Controller, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
-import { CreateChecklistDto } from "./checklistDto";
+import { ChecklistService } from "./checklist.service";
+import { CreateChecklistDto } from "./create-checklist.dto";
+import { CreateChecklistItemDto } from "./create-checklist-item.dto";
 
-@Controller("cards/:cardId/checklists")
+@Controller("checklists")
 @UseGuards(JwtAuthGuard)
 export class ChecklistController {
     constructor(private checklistService: ChecklistService) { }
 
     @Post()
-    createChecklist(
-        @Param("cardId") cardId: number,
-        @Body() dto: CreateChecklistDto,
-    ) {
-        return this.checklistService.createChecklist(cardId, dto.title);
+    create(@Body() dto: CreateChecklistDto) {
+        return this.checklistService.createChecklist(dto);
+    }
+
+    @Post("item")
+    addItem(@Body() dto: CreateChecklistItemDto) {
+        return this.checklistService.addItem(dto);
+    }
+
+    @Patch("item/:id/toggle")
+    toggle(@Param("id") id: number) {
+        return this.checklistService.toggleItem(id);
     }
 }
