@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
 import { BoardService } from "./board.service";
 import { CreateBoardDto } from "./createBoardDto";
@@ -25,4 +25,10 @@ export class BoardController {
       const userId = req.user.userId;
       return this.boardService.getBoards(userId);
    }
+
+   @Get(":boardId/members")
+   getBoardMembers(@Param("boardId") boardId: number) {
+      return this.boardService.getBoardMembers(boardId);
+   }
+
 }

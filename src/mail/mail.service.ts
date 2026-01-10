@@ -13,6 +13,8 @@ export class MailService {
         pass: process.env.MAIL_PASS,
       },
     });
+    console.log("MAIL USER:", process.env.MAIL_USER);
+    console.log("MAIL PASS EXISTS:", !!process.env.MAIL_PASS);
 
     this.transporter.verify((error, success) => {
       if (error) {

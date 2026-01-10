@@ -1,11 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { CreateChecklistItemDto } from "./create-checklist-item.dto";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ChecklistItem } from "./checklist-item.entity";
 import { Checklist } from "./checklist.entity";
 import { Repository } from "typeorm";
+import { ChecklistItem } from "./checklist-item.entity";
 import { Card } from "src/card/card.entity";
-import { CreateChecklistDto } from "./create-checklist.dto";
 
 @Injectable()
 export class ChecklistService {
@@ -20,32 +18,47 @@ export class ChecklistService {
         private cardRepo: Repository<Card>,
     ) { }
 
-    async createChecklist(dto: CreateChecklistDto) {
+    async createChecklist(cardId: number, title: string) {
         const card = await this.cardRepo.findOne({
-            where: { id: dto.cardId },
+          
+            where: { id: cardId },
         });
-
-        if (!card) throw new NotFoundException("Card not found");
+        console.log("card", card )
+        if (!card) {
+            throw new NotFoundException(`Card ${cardId} not found`);
+        }
 
         const checklist = this.checklistRepo.create({
-            title: dto.title,
+            title,
             card,
         });
 
-        return this.checklistRepo.save(checklist);
+        const saved = await this.checklistRepo.save(checklist);
+
+        return this.checklistRepo.findOne({
+            where: { id: saved.id },
+            relations: [ "card" ,"items"],   // 🔥 IMPORTANT
+        });
     }
 
-    async addItem(dto: CreateChecklistItemDto) {
-        const checklist = await this.checklistRepo.findOne({
-            where: { id: dto.checklistId },
-        });
 
-        if (!checklist) throw new NotFoundException("Checklist not found");
+
+    async addItem(checklistId: number, text: string) {
+        const checklist = await this.checklistRepo.findOne({
+            where: { id: checklistId },
+        });
+        console.log("ADD ITEM checklistId:", checklistId);
+
+        console.log("checklist", checklist)
+        if (!checklist) {
+            throw new NotFoundException("Checklist not found");
+        }
 
         const item = this.itemRepo.create({
-            text: dto.text,
+            text,
             checklist,
         });
+        console.log("item", item)
 
         return this.itemRepo.save(item);
     }
@@ -57,4 +70,19 @@ export class ChecklistService {
         item.isCompleted = !item.isCompleted;
         return this.itemRepo.save(item);
     }
+
+async deleteChecklist(checklistId: number) {
+    const checklist = await this.checklistRepo.findOne({
+        where: { id: checklistId },
+    });
+
+    if (!checklist) {
+        throw new NotFoundException("Checklist not found");
+    }
+
+    await this.checklistRepo.remove(checklist);
+
+    return { id: checklistId };
+}
+
 }

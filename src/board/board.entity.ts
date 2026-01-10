@@ -5,6 +5,8 @@ import {
     ManyToOne,
     OneToMany,
     CreateDateColumn,
+    ManyToMany,
+    JoinTable,
 } from "typeorm";
 import { User } from "../user/user.entity";
 import { List } from "src/list/list.entity";
@@ -25,6 +27,10 @@ export class Board {
 
     @OneToMany(() => List, (list) => list.board)
     lists: List[];
+
+    @ManyToMany(() => User)
+    @JoinTable()
+    members: User[];
 
     @CreateDateColumn()
     createdAt: Date;

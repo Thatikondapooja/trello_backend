@@ -8,6 +8,7 @@ import { User } from "src/user/user.entity";
 
 @Injectable()
 export class BoardService {
+   
     constructor(
         @InjectRepository(Board)
         private readonly boardRepo: Repository<Board>,
@@ -55,4 +56,14 @@ export class BoardService {
             order: { createdAt: "DESC" },
         });
     }
+
+    async getBoardMembers(boardId: number) {
+        const board = await this.boardRepo.findOne({
+            where: { id: boardId },
+            relations: ["members"],
+        });
+
+        return board?.members ?? [];
+    }
+
 }

@@ -1,6 +1,7 @@
 import { Checklist } from "src/checklist/checklist.entity";
 import { List } from "src/list/list.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/user/user.entity";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Card {
@@ -31,6 +32,11 @@ export class Card {
     @Column()
     position: number;
 
+    @ManyToMany(() => User)
+    @JoinTable()
+    members: User[];
+
+
     @CreateDateColumn()
     createdAt: Date;
 
@@ -38,5 +44,7 @@ export class Card {
     list: List;
     @OneToMany(() => Checklist, checklist => checklist.card)
     checklists: Checklist[];
+
+
 
 }

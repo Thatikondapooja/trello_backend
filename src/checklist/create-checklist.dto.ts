@@ -1,8 +1,11 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateChecklistDto {
-    @IsNumber()
+    @IsInt()
     cardId: number;
+
     @IsString()
+    @IsNotEmpty()
     title: string;
+
 }

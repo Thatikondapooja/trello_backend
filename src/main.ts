@@ -5,7 +5,10 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: "http://localhost:3000",  // change this to your FRONTEND URL
+    origin: [
+      'http://localhost:3000',
+      'http://192.168.31.94:3000',
+  ],  // change this to your FRONTEND URL
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   });

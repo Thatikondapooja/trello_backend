@@ -1,7 +1,7 @@
-import { IsNumber, IsString } from "class-validator";
+import { IsInt, IsNumber, IsString } from "class-validator";
 
 export class CreateChecklistItemDto {
-    @IsNumber()
+      @IsInt()
     checklistId: number;
     @IsString()
     text: string;

@@ -68,4 +68,23 @@ updateCard(
         return this.cardsService.markComplete(id);
     }
 
+    // @Post(":cardId/members")
+    // addMemberToCard(
+    //     @Param("cardId") cardId: number,
+    //     @Body("userId") userId: number
+    // ) {
+    //     return this.cardsService.addMember(cardId, userId);
+    // }
+
+    @Post(":cardId/members")
+    addMember(
+        @Param("cardId") cardId: string,
+        @Body("userId") userId: number
+    ) {
+        return this.cardsService.addMemberToCard(
+            Number(cardId),
+            userId
+        );
+    }
+
 }

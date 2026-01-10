@@ -5,9 +5,10 @@ import { List } from 'src/list/list.entity';
 import { CardsService } from './card.service';
 import { CardsController } from './card.controller';
 import { ActivityModule } from 'src/activity/activity.module';
+import { User } from 'src/user/user.entity';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Card, List]), ActivityModule],
+    imports: [TypeOrmModule.forFeature([Card, List,User]), ActivityModule],
     controllers:[CardsController],
     providers:[CardsService],
     exports:[TypeOrmModule],

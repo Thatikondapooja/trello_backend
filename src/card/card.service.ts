@@ -12,13 +12,17 @@ import { UpdateCardDto } from "./updateCard";
 
 @Injectable()
 export class CardsService {
-
+   
+   
     constructor(
         @InjectRepository(Card)
         private cardRepo: Repository<Card>,
 
         @InjectRepository(List)
         private listRepo: Repository<List>,
+
+        @InjectRepository(User)
+        private userRepo: Repository<User>,
 
         private activityService: ActivityService,
     ) { }
@@ -116,10 +120,16 @@ export class CardsService {
 
 
 
-async getCardById(cardId:number){
+async getCardById(id:number){
     const card=await this.cardRepo.findOne({
-        where:{id:cardId},
-        relations:["list"],
+        where:{id},
+        relations: [
+            "list",
+            "list.board",
+            "checklists",
+            "checklists.items",
+            "members",
+        ],
     })
     if (!card) throw new NotFoundException("Card not found");
 
@@ -163,6 +173,24 @@ async getCardById(cardId:number){
         card.isCompleted = true;
         card.reminderSent = true; // 🔥 stop reminders
 
+        return this.cardRepo.save(card);
+    }
+
+    async addMemberToCard(cardId: number, userId: number) {
+        const card = await this.cardRepo.findOne({
+            where: { id: cardId },
+            relations: ["members"],
+        });
+
+        const user = await this.userRepo.findOne({
+            where: { id: userId },
+        });
+
+        if (!card || !user) {
+            throw new NotFoundException();
+        }
+
+        card.members.push(user);
         return this.cardRepo.save(card);
     }
 
