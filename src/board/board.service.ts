@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Board } from "./board.entity";
@@ -31,6 +31,8 @@ export class BoardService {
             title: dto.title,
             description: dto.description,
             owner: user, // ✅ REAL USER ENTITY
+            members: [user], // 🔥 IMPORTANT
+
         });
         console.log(" board owner", board.owner)
         console.log("board", board)
@@ -63,7 +65,12 @@ export class BoardService {
             relations: ["members"],
         });
 
-        return board?.members ?? [];
+        if (!board) {
+            throw new NotFoundException("Board not found");
+        }
+
+        return board.members;
     }
+
 
 }

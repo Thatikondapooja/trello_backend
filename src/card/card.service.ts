@@ -93,9 +93,27 @@ export class CardsService {
     }
 
     async getCardsByList(listId: number) {
-        return this.cardRepo.find({
+        const cards = await this.cardRepo.find({
             where: { list: { id: listId } },
+            relations: ["members", "checklists", "checklists.items"],
             order: { createdAt: "ASC" },
+        });
+
+        return cards.map(card => {
+            const total = card.checklists.reduce(
+                (a, c) => a + c.items.length,
+                0
+            );
+            const completed = card.checklists.reduce(
+                (a, c) => a + c.items.filter(i => i.isCompleted).length,
+                0
+            );
+
+            return {
+                ...card,
+                checklistSummary:
+                    total > 0 ? { completed, total } : null,
+            };
         });
     }
 
@@ -157,21 +175,45 @@ async getCardById(id:number){
         return this.cardRepo.save(card);
     }
 
-    async markComplete(cardId: number) {
+    // async markComplete(cardId: number) {
+    //     const card = await this.cardRepo.findOne({
+    //         where: { id: cardId },
+    //         relations: [
+    //             "checklists",
+    //             "checklists.items" // 🔥 REQUIRED
+    //         ],
+    //     });
+
+    //     if (!card) {
+    //         throw new NotFoundException("Card not found");
+    //     }
+
+    //     card.isCompleted = true;
+    //     card.reminderSent = true; // 🔥 stop reminders
+
+    //     return this.cardRepo.save(card);
+    // }
+
+    async toggleComplete(cardId: number) {
         const card = await this.cardRepo.findOne({
             where: { id: cardId },
             relations: [
-                "checklists",
-                "checklists.items" // 🔥 REQUIRED
-            ],
+                        "checklists",
+                        "checklists.items" // 🔥 REQUIRED
+                    ],
         });
 
         if (!card) {
             throw new NotFoundException("Card not found");
         }
 
-        card.isCompleted = true;
-        card.reminderSent = true; // 🔥 stop reminders
+        // 🔥 TOGGLE instead of forcing true
+        card.isCompleted = !card.isCompleted;
+
+        // Reset reminder when unchecking
+        if (!card.isCompleted) {
+            card.reminderSent = false;
+        }
 
         return this.cardRepo.save(card);
     }

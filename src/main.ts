@@ -7,7 +7,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'http://192.168.31.94:3000',
+      'http://192.168.1.32:3000',
   ],  // change this to your FRONTEND URL
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",

@@ -63,9 +63,14 @@ updateCard(
   return this.cardsService.updateCard(id, dto, req.user);
 }
 
-    @Patch(":id/complete")
-    markComplete(@Param("id") id: number) {
-        return this.cardsService.markComplete(id);
+    // @Patch(":id/complete")
+    // markComplete(@Param("id") id: number) {
+    //     return this.cardsService.markComplete(id);
+    // }
+
+    @Patch(":id/toggle-complete")
+    toggleComplete(@Param("id") id: number) {
+        return this.cardsService.toggleComplete(id);
     }
 
     // @Post(":cardId/members")
