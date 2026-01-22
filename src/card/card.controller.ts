@@ -9,13 +9,13 @@ import { UpdateCardDto } from "./updateCard";
 @Controller("cards")
 @UseGuards(JwtAuthGuard)
 export class CardsController {
- 
+
     constructor(private cardsService: CardsService) { }
 
     // POST /cards
     @Post()
     createCard(@Body() dto: CreateCardDto, @Req() req) {
-        return this.cardsService.createCard(dto, req.user);
+        return this.cardsService.createCard(dto, { ...req.user, id: req.user.userId });
     }
 
     // GET /cards/list/:listId
@@ -34,7 +34,7 @@ export class CardsController {
         return this.cardsService.moveCard(
             (cardId),
             dto.toListId,
-            req.user,
+            { ...req.user, id: req.user.userId },
         );
     }
 
@@ -49,19 +49,19 @@ export class CardsController {
     }
 
     @Get(":id")
-    getCard(@Param("id") id:number){
+    getCard(@Param("id") id: number) {
         return this.cardsService.getCardById(id)
     }
 
-   // PATCH /cards/:id
-@Patch(":id")
-updateCard(
-  @Param("id") id: number,
-  @Body() dto: UpdateCardDto,
-  @Req() req,
-) {
-  return this.cardsService.updateCard(id, dto, req.user);
-}
+    // PATCH /cards/:id
+    @Patch(":id")
+    updateCard(
+        @Param("id") id: number,
+        @Body() dto: UpdateCardDto,
+        @Req() req,
+    ) {
+        return this.cardsService.updateCard(id, dto, { ...req.user, id: req.user.userId });
+    }
 
     // @Patch(":id/complete")
     // markComplete(@Param("id") id: number) {

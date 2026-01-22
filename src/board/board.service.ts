@@ -5,15 +5,18 @@ import { Board } from "./board.entity";
 import { ActivityService } from "../activity/activity.service";
 import { CreateBoardDto } from "./createBoardDto";
 import { User } from "src/user/user.entity";
+import { List } from "src/list/list.entity";
 
 @Injectable()
 export class BoardService {
-   
+
     constructor(
         @InjectRepository(Board)
         private readonly boardRepo: Repository<Board>,
         @InjectRepository(User)
         private readonly userRepo: Repository<User>,
+        @InjectRepository(List)
+        private readonly listRepo: Repository<List>,
         private readonly activityService: ActivityService,
     ) { }
 
@@ -39,6 +42,17 @@ export class BoardService {
 
         const savedBoard = await this.boardRepo.save(board);
         console.log("savedBoard", savedBoard)
+
+        // 🔥 CREATE DEFAULT LISTS
+        const defaultLists = ["To Do", "Doing", "Done"];
+        for (const title of defaultLists) {
+            const list = this.listRepo.create({
+                title,
+                board: savedBoard,
+            });
+            await this.listRepo.save(list);
+        }
+
         await this.activityService.log(
             `Board '${savedBoard.title}' created`,
             savedBoard,

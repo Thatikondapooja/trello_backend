@@ -11,7 +11,7 @@ export class ListsController {
     // POST /lists
     @Post()
     createList(@Req() req, @Body() dto: CreateListDto) {
-        return this.listsService.createList(dto, req.user);
+        return this.listsService.createList(dto, req.user.userId);
     }
 
     // GET /boards/:boardId/lists

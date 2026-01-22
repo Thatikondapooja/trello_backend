@@ -15,8 +15,8 @@ export class BoardController {
       @Req() req: any
    ) {
       // const userId = req.user; // 👈 comes from JwtStrategy
-      console.log("req.user from controller", req.user.sub)
-      return this.boardService.createBoard(body, req.user.sub);
+      console.log("req.user from controller", req.user.userId)
+      return this.boardService.createBoard(body, req.user.userId);
    }
 
    /* GET USER BOARDS */
