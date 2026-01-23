@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Checklist } from "src/checklist/checklist.entity";
 import { Repository } from "typeorm";
 import { ChecklistItem } from "src/checklist/checklist-item.entity";
 import { Card } from "src/card/card.entity";
+import { Checklist } from "./checklist.entity";
 
 @Injectable()
 export class ChecklistService {

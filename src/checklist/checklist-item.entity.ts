@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Checklist } from "src/checklist/checklist.entity";
+import { Checklist } from "./checklist.entity";
 
 @Entity()
 export class ChecklistItem {
