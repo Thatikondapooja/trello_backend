@@ -7,18 +7,20 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'http://192.168.1.32:3000',
-  ],  // change this to your FRONTEND URL
+      'http://192.168.31.94:3000',
+      process.env.FRONTEND_URL, // 🌍 Production URL from Render/Vercel
+    ],
     credentials: true,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   });
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,   // 🔥 REQUIRED
- whitelist: true })
+      whitelist: true
+    })
   );
 
-  const runserver=await app.listen(process.env.PORT ?? 5000);
-  console.log("server started on port", "http://localhost:"+ (process.env.PORT ?? 5000) );
+  const runserver = await app.listen(process.env.PORT ?? 5000);
+  console.log("server started on port", "http://localhost:" + (process.env.PORT ?? 5000));
 }
 bootstrap();
