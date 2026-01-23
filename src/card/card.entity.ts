@@ -1,4 +1,4 @@
-import { Checklist } from "src/checklist/checklist.entity";
+import { Checklist } from "../checklist/checklist.entity";
 import { List } from "src/list/list.entity";
 import { User } from "src/user/user.entity";
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";

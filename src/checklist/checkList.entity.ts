@@ -1,4 +1,4 @@
-import { Card } from "src/card/card.entity";
+import { Card } from "../card/card.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ChecklistItem } from "./checklist-item.entity";
 
