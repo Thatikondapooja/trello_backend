@@ -19,7 +19,7 @@ import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { ScheduleModule } from "@nestjs/schedule";
 import { MailModule } from './mail/mail.module';
- import { ChecklistModule } from './checklist/checklist.module';
+import { ChecklistModule } from './checklist/checklist.module';
 
 
 @Module({
@@ -35,6 +35,12 @@ import { MailModule } from './mail/mail.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true, // dev only
+      ssl: true,
+      extra: {
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      },
     }),
 
     UserModule,
@@ -51,13 +57,13 @@ import { MailModule } from './mail/mail.module';
 
     MailModule,
 
-   ChecklistModule,
+    ChecklistModule,
 
-   
 
-    
+
+
   ],
-  controllers: [ AppController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule { }
