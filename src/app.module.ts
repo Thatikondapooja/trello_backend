@@ -36,7 +36,7 @@ import { ChecklistModule } from './checklist/checklist.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true, // dev only
-      ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+      ssl: (process.env.DATABASE_URL || process.env.RENDER) ? { rejectUnauthorized: false } : false,
     }),
 
     UserModule,
