@@ -14,8 +14,7 @@ export class BoardController {
       @Body() body: CreateBoardDto,
       @Req() req: any
    ) {
-      // const userId = req.user; // 👈 comes from JwtStrategy
-      console.log("req.user from controller", req.user.userId)
+      console.log("🚀 BACKEND: Creating board for userId:", req.user.userId);
       return this.boardService.createBoard(body, req.user.userId);
    }
 
@@ -23,6 +22,7 @@ export class BoardController {
    @Get("getboards")
    getBoards(@Req() req: any) {
       const userId = req.user.userId;
+      console.log("🚀 BACKEND: Fetching boards for userId:", userId);
       return this.boardService.getBoards(userId);
    }
 
