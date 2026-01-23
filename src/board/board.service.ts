@@ -4,8 +4,8 @@ import { Repository } from "typeorm";
 import { Board } from "./board.entity";
 import { ActivityService } from "../activity/activity.service";
 import { CreateBoardDto } from "./createBoardDto";
-import { User } from "src/user/user.entity";
-import { List } from "src/list/list.entity";
+import { User } from "../user/user.entity";
+import { List } from "../list/list.entity";
 
 @Injectable()
 export class BoardService {

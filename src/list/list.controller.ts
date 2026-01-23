@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
 import { ListsService } from "./list.service";
 import { CreateListDto } from "./CreateListDto";
-import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
+import { JwtAuthGuard } from "../auth/JwtAuthGuard";
 
 @Controller("lists")
 @UseGuards(JwtAuthGuard)

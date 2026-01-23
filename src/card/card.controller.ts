@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, ParseIntPipe, Patch, Post, Req, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
+import { JwtAuthGuard } from "../auth/JwtAuthGuard";
 import { CardsService } from "./card.service";
 import { CreateCardDto } from "./CardDto";
 import { MoveCardDto } from "./MoveDto";

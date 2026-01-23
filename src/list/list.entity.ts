@@ -7,7 +7,7 @@ import {
     CreateDateColumn,
 } from "typeorm";
 import { Board } from "../board/board.entity";
-import { Card } from "src/card/card.entity";
+import { Card } from "../card/card.entity";
 
 @Entity()
 export class List {

@@ -9,11 +9,11 @@ import {
     JoinTable,
 } from "typeorm";
 import { User } from "../user/user.entity";
-import { List } from "src/list/list.entity";
+import { List } from "../list/list.entity";
 
 @Entity()
 export class Board {
-    @PrimaryGeneratedColumn() 
+    @PrimaryGeneratedColumn()
     id: number;
 
     @Column()

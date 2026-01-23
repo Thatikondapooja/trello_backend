@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "src/auth/JwtAuthGuard";
+import { JwtAuthGuard } from "../auth/JwtAuthGuard";
 import { BoardService } from "./board.service";
 import { CreateBoardDto } from "./createBoardDto";
 

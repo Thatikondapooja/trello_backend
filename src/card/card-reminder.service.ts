@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Card } from "./card.entity";
-import { MailService } from "src/mail/mail.service";
+import { MailService } from "../mail/mail.service";
 import { Cron } from "@nestjs/schedule";
 
 @Injectable()
@@ -64,4 +64,6 @@ export class CardReminderService {
 
                 console.log("✅ Reminder email sent for card:", card.id);
             }
-        }}}
+        }
+    }
+}

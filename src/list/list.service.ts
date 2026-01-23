@@ -2,10 +2,10 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { List } from "./list.entity";
 import { Repository } from "typeorm";
-import { Board } from "src/board/board.entity";
-import { ActivityService } from "src/activity/activity.service";
+import { Board } from "../board/board.entity";
+import { ActivityService } from "../activity/activity.service";
 import { CreateListDto } from "./CreateListDto";
-import { User } from "src/user/user.entity";
+import { User } from "../user/user.entity";
 
 @Injectable()
 export class ListsService {

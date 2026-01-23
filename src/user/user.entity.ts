@@ -1,27 +1,27 @@
-import { Board } from "src/board/board.entity";
+import { Board } from "../board/board.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class User{
+export class User {
     @PrimaryGeneratedColumn("increment")
-    id:number;
+    id: number;
 
     @Column()
-    FullName:string;
+    FullName: string;
 
-    @Column({unique:true})
-    email:string;
+    @Column({ unique: true })
+    email: string;
 
     @Column()
-    password:string;
+    password: string;
 
     // 🔐 Refresh token (hashed)
     @Column({ type: "text", nullable: true })
-    refreshToken?: string|null;
+    refreshToken?: string | null;
 
-    @OneToMany(()=> Board, (board)=> board.owner)
-    boards:Board[];
+    @OneToMany(() => Board, (board) => board.owner)
+    boards: Board[];
 
     @CreateDateColumn()
-    createdAt:Date;
+    createdAt: Date;
 }

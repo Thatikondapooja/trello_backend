@@ -7,22 +7,22 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { User } from "src/user/user.entity";
-import { UserService } from "src/user/user.service";
+import { User } from "../user/user.entity";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
-   
-   
+
+
     constructor(
         @InjectRepository(User)
         private userRepo: Repository<User>,
         private jwtService: JwtService,
-        private userService:UserService,
+        private userService: UserService,
     ) { }
 
     // ---------------- REGISTER ----------------
-    async register(FullName:string,email: string, password: string) {
+    async register(FullName: string, email: string, password: string) {
         const existingUser = await this.userRepo.findOne({
             where: { email },
         });
@@ -76,11 +76,11 @@ export class AuthService {
 
         console.log("Generated JWT payload:", payload);
 
-        const accessToken = this.jwtService.sign(payload,{expiresIn:"2m"});
+        const accessToken = this.jwtService.sign(payload, { expiresIn: "2m" });
         console.log("Generated JWT token", accessToken);
         const refreshToken = this.jwtService.sign({ sub: user.id }, { expiresIn: "7d" });
         console.log("Generated JWT token", accessToken);
-        
+
 
         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
         await this.userService.setRefreshToken(Number(user.id), hashedRefreshToken);
