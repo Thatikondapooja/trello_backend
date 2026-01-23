@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Checklist } from "./checklist.entity";
+import { Checklist } from "src/checklist/checklist.entity";
 import { Repository } from "typeorm";
-import { ChecklistItem } from "./checklist-item.entity";
+import { ChecklistItem } from "src/checklist/checklist-item.entity";
 import { Card } from "src/card/card.entity";
 
 @Injectable()
@@ -20,10 +20,10 @@ export class ChecklistService {
 
     async createChecklist(cardId: number, title: string) {
         const card = await this.cardRepo.findOne({
-          
+
             where: { id: cardId },
         });
-        console.log("card", card )
+        console.log("card", card)
         if (!card) {
             throw new NotFoundException(`Card ${cardId} not found`);
         }
@@ -37,7 +37,7 @@ export class ChecklistService {
 
         return this.checklistRepo.findOne({
             where: { id: saved.id },
-            relations: [ "card" ,"items"],   // 🔥 IMPORTANT
+            relations: ["card", "items"],   // 🔥 IMPORTANT
         });
     }
 
@@ -71,18 +71,18 @@ export class ChecklistService {
         return this.itemRepo.save(item);
     }
 
-async deleteChecklist(checklistId: number) {
-    const checklist = await this.checklistRepo.findOne({
-        where: { id: checklistId },
-    });
+    async deleteChecklist(checklistId: number) {
+        const checklist = await this.checklistRepo.findOne({
+            where: { id: checklistId },
+        });
 
-    if (!checklist) {
-        throw new NotFoundException("Checklist not found");
+        if (!checklist) {
+            throw new NotFoundException("Checklist not found");
+        }
+
+        await this.checklistRepo.remove(checklist);
+
+        return { id: checklistId };
     }
-
-    await this.checklistRepo.remove(checklist);
-
-    return { id: checklistId };
-}
 
 }
