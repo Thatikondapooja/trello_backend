@@ -7,11 +7,16 @@ export class MailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
       },
+      // Increase timeout for slow connections
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
     });
     console.log("MAIL USER:", process.env.MAIL_USER);
     console.log("MAIL PASS EXISTS:", !!process.env.MAIL_PASS);
@@ -54,13 +59,13 @@ export class MailService {
     </div>
   </div>
 `
-,
+      ,
     });
 
 
-      //     <h3>Reminder for your card</h3>
-      //     <p><b>${cardTitle}</b></p>
-      //     <p>Due on: ${dueDate.toDateString()}</p>
-      //   `,
+    //     <h3>Reminder for your card</h3>
+    //     <p><b>${cardTitle}</b></p>
+    //     <p>Due on: ${dueDate.toDateString()}</p>
+    //   `,
   }
 }
