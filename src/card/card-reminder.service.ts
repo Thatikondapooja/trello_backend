@@ -55,15 +55,19 @@ export class CardReminderService {
 
             if (now >= timeToRemind && !card.reminderSent) {
                 console.log("🚀 Sending reminder for:", card.title);
-                await this.mailService.sendReminderEmail(
+                const isSent = await this.mailService.sendReminderEmail(
                     card.list.board.owner.email,
                     card.title,
                     card.dueDate
                 );
 
-                card.reminderSent = true;
-                await this.cardRepo.save(card);
-                console.log("✅ Reminder sent and marked in DB");
+                if (isSent) {
+                    card.reminderSent = true;
+                    await this.cardRepo.save(card);
+                    console.log("✅ Reminder sent and marked in DB");
+                } else {
+                    console.log("❌ Reminder failed to send. Keeping in DB for retry.");
+                }
             }
         }
     }

@@ -22,14 +22,13 @@ export class MailService {
     }
   }
 
-  async sendReminderEmail(to: string, cardTitle: string, dueDate: Date) {
+  async sendReminderEmail(to: string, cardTitle: string, dueDate: Date): Promise<boolean> {
     const apiKey = process.env.SENDGRID_API_KEY;
 
     // --- MODE 1: SENDGRID API (Best for Production/Render) ---
     if (apiKey) {
       console.log("📧 Sending email via SendGrid API to:", to);
-      this.sendViaSendGrid(apiKey, to, cardTitle, dueDate);
-      return;
+      return this.sendViaSendGrid(apiKey, to, cardTitle, dueDate);
     }
 
     // --- MODE 2: GMAIL SMTP (Best for Local Development) ---
@@ -43,16 +42,18 @@ export class MailService {
           html: this.getHtmlContent(cardTitle, dueDate),
         });
         console.log("✅ Email sent successfully via SMTP");
+        return true;
       } catch (error) {
         console.error("❌ SMTP Error:", error);
+        return false;
       }
-      return;
     }
 
     console.error("❌ No email configuration found (Need SENDGRID_API_KEY or MAIL_USER/PASS)");
+    return false;
   }
 
-  private sendViaSendGrid(apiKey: string, to: string, cardTitle: string, dueDate: Date) {
+  private sendViaSendGrid(apiKey: string, to: string, cardTitle: string, dueDate: Date): Promise<boolean> {
     const data = JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
       from: { email: "thatikondapooja888@gmail.com", name: "Trello Clone" },
@@ -68,21 +69,35 @@ export class MailService {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "Content-Length": data.length,
+        "Content-Length": Buffer.byteLength(data),
       },
     };
 
-    const req = https.request(options, (res) => {
-      if (res.statusCode === 202) {
-        console.log("✅ Email sent successfully via SendGrid API");
-      } else {
-        console.error(`❌ SendGrid API Error: ${res.statusCode}`);
-      }
-    });
+    return new Promise((resolve) => {
+      const req = https.request(options, (res) => {
+        let responseBody = "";
+        res.on("data", (chunk) => { responseBody += chunk; });
 
-    req.on("error", (err) => console.error("❌ API Connection Error:", err));
-    req.write(data);
-    req.end();
+        res.on("end", () => {
+          if (res.statusCode === 202) {
+            console.log("✅ Email sent successfully via SendGrid API");
+            resolve(true);
+          } else {
+            console.error(`❌ SendGrid API Error: ${res.statusCode}`);
+            console.error(`❌ Reason: ${responseBody}`);
+            resolve(false);
+          }
+        });
+      });
+
+      req.on("error", (err) => {
+        console.error("❌ API Connection Error:", err);
+        resolve(false);
+      });
+
+      req.write(data);
+      req.end();
+    });
   }
 
   private getHtmlContent(cardTitle: string, dueDate: Date) {
