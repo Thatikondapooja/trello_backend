@@ -12,13 +12,16 @@ export class MailService {
       secure: false, // TLS
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS, // App Password
+        pass: process.env.MAIL_PASS,
       },
       tls: {
-        rejectUnauthorized: false, // Helps with some restricted environments
+        rejectUnauthorized: false,
+        minVersion: "TLSv1.2"
       },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
+      connectionTimeout: 15000, // Increased timeout
+      greetingTimeout: 15000,
+      logger: true, // 🔴 Enabled for debugging
+      debug: true,  // 🔴 Enabled for debugging
     });
     console.log("MAIL USER:", process.env.MAIL_USER);
     console.log("MAIL PASS EXISTS:", !!process.env.MAIL_PASS);
