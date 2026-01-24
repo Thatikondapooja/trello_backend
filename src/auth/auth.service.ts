@@ -89,6 +89,7 @@ export class AuthService {
         return {
             message: "Login successful",
             userId: user.id,
+            FullName: user.FullName, // Include FullName for frontend header
             email: user.email,
             accessToken: accessToken,
             refreshToken: refreshToken,

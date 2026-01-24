@@ -42,7 +42,7 @@ export class CardReminderService {
             if (!card.list?.board?.owner?.email) continue;
 
             const reminderMinutes = card.reminderMinutes || 0;
-            const timeToRemind = new Date(card.dueDate.getTime() - reminderMinutes * 60 * 1000);
+            const timeToRemind = new Date(card.dueDate.getTime() - (reminderMinutes * 60 * 1000));
 
             console.log({
                 cardId: card.id,
