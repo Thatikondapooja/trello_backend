@@ -1,77 +1,101 @@
-import * as nodemailer from "nodemailer";
 import { Injectable } from "@nestjs/common";
+import * as https from "https";
+import * as nodemailer from "nodemailer";
 
 @Injectable()
 export class MailService {
-  private transporter;
+  private transporter: any;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false, // TLS via STARTTLS
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
-      tls: {
-        rejectUnauthorized: false,
-        minVersion: "TLSv1.2"
-      },
-      connectionTimeout: 60000, // 60s timeout for cloud networks
-      greetingTimeout: 60000,
-      socketTimeout: 60000,
-      logger: true,
-      debug: true,
-    });
-    console.log("MAIL USER:", process.env.MAIL_USER);
-    console.log("MAIL PASS EXISTS:", !!process.env.MAIL_PASS);
-
-    this.transporter.verify((error, success) => {
-      if (error) {
-        console.error("❌ Mail server error:", error);
-      } else {
-        console.log("✅ Mail server ready");
-      }
-    });
+    // Only initialize SMTP if we are NOT using the SendGrid API
+    if (!process.env.SENDGRID_API_KEY && process.env.MAIL_USER) {
+      this.transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
+      });
+      console.log("🚀 Mail Service (SMTP Fallback Mode) Initialized");
+    } else {
+      console.log("🚀 Mail Service (SendGrid API Mode) Initialized");
+    }
   }
 
-
   async sendReminderEmail(to: string, cardTitle: string, dueDate: Date) {
-    console.log("📧 Sending email to:", to);
+    const apiKey = process.env.SENDGRID_API_KEY;
 
-    await this.transporter.sendMail({
-      from: `"Trello Clone" <${process.env.MAIL_USER}>`,
-      to,
+    // --- MODE 1: SENDGRID API (Best for Production/Render) ---
+    if (apiKey) {
+      console.log("📧 Sending email via SendGrid API to:", to);
+      this.sendViaSendGrid(apiKey, to, cardTitle, dueDate);
+      return;
+    }
+
+    // --- MODE 2: GMAIL SMTP (Best for Local Development) ---
+    if (this.transporter) {
+      console.log("📧 Sending email via Gmail SMTP to:", to);
+      try {
+        await this.transporter.sendMail({
+          from: `"Trello Clone" <${process.env.MAIL_USER}>`,
+          to,
+          subject: "⏰ Card Reminder",
+          html: this.getHtmlContent(cardTitle, dueDate),
+        });
+        console.log("✅ Email sent successfully via SMTP");
+      } catch (error) {
+        console.error("❌ SMTP Error:", error);
+      }
+      return;
+    }
+
+    console.error("❌ No email configuration found (Need SENDGRID_API_KEY or MAIL_USER/PASS)");
+  }
+
+  private sendViaSendGrid(apiKey: string, to: string, cardTitle: string, dueDate: Date) {
+    const data = JSON.stringify({
+      personalizations: [{ to: [{ email: to }] }],
+      from: { email: "thatikondapooja888@gmail.com", name: "Trello Clone" },
       subject: "⏰ Card Reminder",
-      html: `
-  <div style="font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 24px;">
-    <div style="max-width: 480px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px;">
-      <h2 style="color: #1a73e8; margin-bottom: 16px;">
-        ⏰ Reminder for your card
-      </h2>
-
-      <p style="font-size: 14px; color: #333;">
-        <b>${cardTitle}</b>
-      </p>
-
-      <p>Due on: ${dueDate.toDateString()}</p>
-
-      <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
-
-      <p style="font-size: 12px; color: #777;">
-        This is an automated reminder from Trello Clone.
-      </p>
-    </div>
-  </div>
-`
-      ,
+      content: [{ type: "text/html", value: this.getHtmlContent(cardTitle, dueDate) }],
     });
 
+    const options = {
+      hostname: "api.sendgrid.com",
+      port: 443,
+      path: "/v3/mail/send",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Length": data.length,
+      },
+    };
 
-    //     <h3>Reminder for your card</h3>
-    //     <p><b>${cardTitle}</b></p>
-    //     <p>Due on: ${dueDate.toDateString()}</p>
-    //   `,
+    const req = https.request(options, (res) => {
+      if (res.statusCode === 202) {
+        console.log("✅ Email sent successfully via SendGrid API");
+      } else {
+        console.error(`❌ SendGrid API Error: ${res.statusCode}`);
+      }
+    });
+
+    req.on("error", (err) => console.error("❌ API Connection Error:", err));
+    req.write(data);
+    req.end();
+  }
+
+  private getHtmlContent(cardTitle: string, dueDate: Date) {
+    return `
+      <div style="font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 24px;">
+        <div style="max-width: 480px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px; border: 1px solid #e1e4e8;">
+          <h2 style="color: #1a73e8; margin-bottom: 16px;">⏰ Reminder for your card</h2>
+          <p style="font-size: 16px; color: #333; font-weight: bold;">${cardTitle}</p>
+          <p style="color: #586069;">Due on: ${dueDate.toDateString()}</p>
+          <hr style="border: none; border-top: 1px solid #eaecef; margin: 24px 0;" />
+          <p style="font-size: 12px; color: #6a737d;">This is an automated reminder from Trello Clone.</p>
+        </div>
+      </div>
+    `;
   }
 }
