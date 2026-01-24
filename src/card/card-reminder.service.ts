@@ -41,18 +41,20 @@ export class CardReminderService {
             if (!card.dueDate || !card.reminderMinutes) continue;
             if (!card.list?.board?.owner?.email) continue;
 
-            const reminderTime = new Date(Date.now() - 60_000);
-            console.log("reminderTime", reminderTime)
+            const reminderMinutes = card.reminderMinutes || 0;
+            const timeToRemind = new Date(card.dueDate.getTime() - reminderMinutes * 60 * 1000);
 
             console.log({
                 cardId: card.id,
-                nowUTC: now.toISOString(),
-                dueUTC: card.dueDate.toISOString(),
-                reminderUTC: reminderTime.toISOString(),
+                title: card.title,
+                now: now.toISOString(),
+                due: card.dueDate.toISOString(),
+                remindAt: timeToRemind.toISOString(),
+                alreadySent: card.reminderSent
             });
 
-            // ✅ CORRECT CONDITION (NO TIME WINDOW)
-            if (now >= reminderTime && !card.reminderSent) {
+            if (now >= timeToRemind && !card.reminderSent) {
+                console.log("🚀 Sending reminder for:", card.title);
                 await this.mailService.sendReminderEmail(
                     card.list.board.owner.email,
                     card.title,
@@ -61,8 +63,7 @@ export class CardReminderService {
 
                 card.reminderSent = true;
                 await this.cardRepo.save(card);
-
-                console.log("✅ Reminder email sent for card:", card.id);
+                console.log("✅ Reminder sent and marked in DB");
             }
         }
     }
