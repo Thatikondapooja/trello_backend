@@ -8,13 +8,15 @@ export class MailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false, // TLS
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
+        pass: process.env.MAIL_PASS, // App Password
       },
-      // Increase timeout for slow connections
+      tls: {
+        rejectUnauthorized: false, // Helps with some restricted environments
+      },
       connectionTimeout: 10000,
       greetingTimeout: 10000,
     });
