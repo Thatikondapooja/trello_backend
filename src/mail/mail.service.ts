@@ -7,14 +7,20 @@ export class MailService {
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // TLS via STARTTLS
       auth: {
         user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS, // Standard Gmail App Password
+        pass: process.env.MAIL_PASS,
       },
-      connectionTimeout: 30000,
-      greetingTimeout: 30000,
-      socketTimeout: 30000,
+      tls: {
+        rejectUnauthorized: false,
+        minVersion: "TLSv1.2"
+      },
+      connectionTimeout: 60000, // 60s timeout for cloud networks
+      greetingTimeout: 60000,
+      socketTimeout: 60000,
       logger: true,
       debug: true,
     });
