@@ -1,10 +1,15 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './JwtAuthGuard';
+import { VerifyForgotOtpDto } from 'src/otp/verifyForgotPwdDto';
+import { OtpPurpose } from 'src/otp/otp.entity';
+import { OtpService } from 'src/otp/otp.service';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService:AuthService){}
+    constructor(private authService:AuthService,
+          private otpService:OtpService,
+    ){}
 
     @Post("register")
     register(@Body() body: { FullName:string ,email:string ,password:string}){
@@ -32,6 +37,26 @@ export class AuthController {
         return this.authService.refresh(body.refreshToken);
     }
 
+
+     @Post('verify-forgot-otp')
+    async verifyForgotOtp(@Body() dto: VerifyForgotOtpDto) {
+        // Use the purpose from DTO to verify
+        const result = await this.otpService.verifyOtp(
+            dto.email,
+            dto.otp,
+            OtpPurpose.FORGOT_PASSWORD // always use FORGOT_PASSWORD here
+        );
+
+        return { message: 'OTP verified successfully' };
+    }
+
+
+
+
+   @Post('reset-password')
+    async resetPassword(@Body() dto: { email: string, password: string }) {
+        return this.authService.resetPassword(dto);
+    }
 
   
 }

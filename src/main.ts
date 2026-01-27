@@ -8,8 +8,8 @@ async function bootstrap() {
   app.enableCors({
     origin: (origin, callback) => {
       const allowedOrigins = [
-        'http://localhost:3000',
-        'http://192.168.31.94:3000',
+        'http://localhost:3001',
+        'http://192.168.31.94:3001',
         frontendUrl,
       ];
       if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {

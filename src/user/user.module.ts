@@ -9,7 +9,7 @@ import { Card } from "../card/card.entity";
   imports: [TypeOrmModule.forFeature([User, Card])],
   controllers: [UserController],
   providers: [UserService],
-  exports: [TypeOrmModule], // ✅ IMPORTANT //this is because export repository to other modules
+  exports: [TypeOrmModule, UserService], // ✅ IMPORTANT //this is because export repository to other modules
 
 })
 export class UserModule { }

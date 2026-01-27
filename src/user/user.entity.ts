@@ -1,3 +1,4 @@
+import { Otps } from "src/otp/otp.entity";
 import { Board } from "../board/board.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -24,4 +25,8 @@ export class User {
 
     @CreateDateColumn()
     createdAt: Date;
+
+
+     @OneToMany(() => Otps, (otp) => otp.user)
+    otps: Otps[];
 }

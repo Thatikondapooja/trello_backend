@@ -2,6 +2,7 @@ import {
     Injectable,
     BadRequestException,
     UnauthorizedException,
+    NotFoundException,
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -12,6 +13,7 @@ import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
+   
 
 
     constructor(
@@ -128,4 +130,35 @@ export class AuthService {
     }
 
 
+
+    async issueTokensForUser(user: User) {
+        const payload = {
+            sub: user.id, email: user.email
+        };
+        const access = this.jwtService.sign(payload, { expiresIn: '15m' });
+        console.log(" access from issueTokensForUser", access)
+        const refresh = this.jwtService.sign({ sub: user.id }, { expiresIn: '7d' });
+        console.log(" refresh from issueTokensForUser", refresh)
+        return {
+            access_token: access, refresh_token: refresh, user: {
+                userId: user.id, email: user.email, FullName: user.FullName
+            }
+        };
+    }
+
+    async resetPassword(dto: { email: string, password: string }) {
+        const user = await this.userRepo.findOne({ where: { email: dto.email } });
+
+        if (!user) throw new NotFoundException("User not found");
+
+        user.password = await bcrypt.hash(dto.password, 10);
+
+        await this.userRepo.save(user);
+
+        return { message: "Password updated successfully" };
+    }
+
+    
 }
+
+
