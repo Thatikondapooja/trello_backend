@@ -45,6 +45,8 @@ export class Card {
     @OneToMany(() => Checklist, checklist => checklist.card)
     checklists: Checklist[];
 
+    @Column({ default: false })
+    isArchived: boolean;
 
 
 }

@@ -92,4 +92,21 @@ export class CardsController {
         );
     }
 
+
+@Patch(":id/archive")
+archive(@Param("id") id: number) {
+  return this.cardsService.archiveCard(id);
+}
+
+@Patch(":id/restore")
+restore(@Param("id") id: number) {
+  return this.cardsService.restoreCard(id);
+}
+
+@Get("archived/:boardId")
+getArchived(@Param("boardId") boardId: number) {
+  return this.cardsService.getArchivedCards(boardId);
+}
+
+
 }

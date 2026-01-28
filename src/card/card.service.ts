@@ -236,4 +236,35 @@ async getCardById(id:number){
         return this.cardRepo.save(card);
     }
 
+
+    async archiveCard(cardId: number) {
+  return this.cardRepo.update(cardId, { isArchived: true });
+}
+
+async restoreCard(cardId: number) {
+  return this.cardRepo.update(cardId, { isArchived: false });
+}
+
+async getActiveCards(listId: number) {
+  return this.cardRepo.find({
+    where: {
+      list: { id: listId },
+      isArchived: false,
+    },
+  });
+}
+
+async getArchivedCards(boardId: number) {
+  return this.cardRepo.find({
+    where: {
+      list: {
+        board: { id: boardId },
+      },
+      isArchived: true,
+    },
+  });
+}
+
+
+
 }
