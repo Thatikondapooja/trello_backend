@@ -21,15 +21,18 @@ export class OtpService {
     async createAndSendOtp(email: string, purpose: OtpPurpose) {
         const user = await this.userRepo.findOne({
             where: { email },
-            
+
         });
 
         console.log("OTP: Found user →", user);
 
         if (!user) throw new NotFoundException('User not found');
-          
-       const purposes= await this.otpRepo.delete({ user, purpose });
-       
+
+        const purposes = await this.otpRepo.delete({
+            user: { id: user.id },
+            purpose: purpose
+        });
+
         console.log(" delete purposes", purposes)
         const otpPlain = this.generateOtpString();
         console.log("otpPlain:", otpPlain);
@@ -38,7 +41,7 @@ export class OtpService {
         console.log("otpHash:", otpHash);
 
         const otpEntity = this.otpRepo.create({
-            user:user,           // ✔ FIXED — proper relation
+            user: user,           // ✔ FIXED — proper relation
             otpHash,
             purpose,
             expiresAt: new Date(Date.now() + 5 * 60 * 1000),
@@ -48,7 +51,7 @@ export class OtpService {
 
         console.log("Sending OTP to:", user.email);
 
-        await this.mailService.sendOtpEmail(user.email, otpPlain,purpose);
+        await this.mailService.sendOtpEmail(user.email, otpPlain, purpose);
 
         return { message: 'OTP sent successfully' };
     }
