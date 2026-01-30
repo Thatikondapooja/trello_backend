@@ -49,7 +49,7 @@ async function bootstrap() {
     'http://192.168.31.94:3001',
   ];
 
-  const PROD_ORIGIN = 'https://trello-app-cfrontend-a58n.vercel.app';
+  const PROD_ORIGIN = 'https://trello-clone-pooja.vercel.app';
 
   app.use(
     helmet({
