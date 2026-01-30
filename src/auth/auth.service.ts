@@ -13,7 +13,7 @@ import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
-   
+
 
 
     constructor(
@@ -158,7 +158,7 @@ export class AuthService {
         return { message: "Password updated successfully" };
     }
 
-    
+
 }
 
 
