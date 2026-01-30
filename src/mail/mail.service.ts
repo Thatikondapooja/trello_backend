@@ -5,8 +5,8 @@ import { OtpPurpose } from "src/otp/otp.entity";
 
 @Injectable()
 export class MailService {
- private transporter;  
-  
+  private transporter;
+
 
   constructor() {
     // Only initialize SMTP if we are NOT using the SendGrid API
@@ -56,11 +56,17 @@ export class MailService {
   }
 
   private sendViaSendGrid(apiKey: string, to: string, cardTitle: string, dueDate: Date): Promise<boolean> {
+    const html = this.getHtmlContent(cardTitle, dueDate);
+    const subject = "⏰ Card Reminder";
+    return this.sendRawViaSendGrid(apiKey, to, subject, html);
+  }
+
+  private sendRawViaSendGrid(apiKey: string, to: string, subject: string, html: string): Promise<boolean> {
     const data = JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
       from: { email: "thatikondapooja888@gmail.com", name: "Trello Clone" },
-      subject: "⏰ Card Reminder",
-      content: [{ type: "text/html", value: this.getHtmlContent(cardTitle, dueDate) }],
+      subject: subject,
+      content: [{ type: "text/html", value: html }],
     });
 
     const options = {
@@ -125,7 +131,7 @@ export class MailService {
       purpose === OtpPurpose.FORGOT_PASSWORD
         ? 'Reset Your Password – OTP Code'
         : 'Verify Your Email – OTP Code';
-    console.log("purpose", purpose)
+
     const message =
       purpose === OtpPurpose.FORGOT_PASSWORD
         ? `
@@ -139,18 +145,13 @@ export class MailService {
                 Use the following One-Time Password (OTP) to complete your sign-in.
             </p>
         `;
-    console.log(" purpose === OtpPurpose.FORGOT_PASSWORD", purpose)
 
-    await this.transporter.sendMail({
-      from: `"YourApp Security" <${process.env.MAIL_USER}>`,
-      to,
-      subject,
-      html: `
+    const html = `
         <div style="font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 24px;">
           <div style="max-width: 480px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px;">
             
             <h2 style="color: #1a73e8; margin-bottom: 16px;">${purpose === OtpPurpose.FORGOT_PASSWORD ? 'Password Reset OTP' : 'Login Verification'
-        }</h2>
+      }</h2>
 
             ${message}
 
@@ -181,9 +182,32 @@ export class MailService {
 
           </div>
         </div>
-        `,
-    });
+        `;
 
-    console.log(`OTP email sent to ${to} with purpose: ${purpose}`);
+    const apiKey = process.env.SENDGRID_API_KEY;
+
+    if (apiKey) {
+      console.log("📧 Sending OTP email via SendGrid API to:", to);
+      const success = await this.sendRawViaSendGrid(apiKey, to, subject, html);
+      if (success) {
+        console.log(`✅ OTP email sent via SendGrid to ${to}`);
+      } else {
+        console.error(`❌ Failed to send OTP email via SendGrid to ${to}`);
+      }
+      return;
+    }
+
+    if (this.transporter) {
+      console.log("📧 Sending OTP email via SMTP to:", to);
+      await this.transporter.sendMail({
+        from: `"YourApp Security" <${process.env.MAIL_USER}>`,
+        to,
+        subject,
+        html,
+      });
+      console.log(`✅ OTP email sent via SMTP to ${to} with purpose: ${purpose}`);
+    } else {
+      console.error("❌ No email configuration found for OTP (Need SENDGRID_API_KEY or MAIL_USER/PASS)");
+    }
   }
 }
