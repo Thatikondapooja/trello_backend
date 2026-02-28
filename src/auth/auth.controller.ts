@@ -30,8 +30,7 @@ export class AuthController {
         };    
     } 
     
-    
-    
+
     @Post("refresh")
     async refresh(@Body() body: { refreshToken: string }) {
         return this.authService.refresh(body.refreshToken);
@@ -49,9 +48,6 @@ export class AuthController {
 
         return { message: 'OTP verified successfully' };
     }
-
-
-
 
    @Post('reset-password')
     async resetPassword(@Body() dto: { email: string, password: string }) {

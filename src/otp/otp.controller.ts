@@ -7,7 +7,8 @@ import { OtpPurpose } from "./otp.entity";
 
 @Controller('auth')
 export class OtpController {
-    constructor(private otpService: OtpService,   @Inject(forwardRef(() => AuthService)) private authService: AuthService) { }
+    constructor(private otpService: OtpService, 
+          @Inject(forwardRef(() => AuthService)) private authService: AuthService) { }
 
     // POST /auth/send-otp  { email }
     @Post('send-otp')
