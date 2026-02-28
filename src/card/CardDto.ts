@@ -1,27 +1,26 @@
-import { Type } from "class-transformer";
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateCardDto {
-    @IsNotEmpty()
-    @IsString()
-    title: string;
+  @IsNotEmpty()
+  @IsString()
+  title: string;
 
-    @Type(() => Number)
-    @IsNumber()
-    listId: number;
+  @Type(() => Number)
+  @IsNumber()
+  listId: number;
 
-    @IsOptional()
-    @IsString()
-    description?: string;
+  @IsOptional()
+  @IsString()
+  description?: string;
 
-    @IsOptional()
-    @Type(() => Date)
-    dueDate?: Date;
+  @IsOptional()
+  @Type(() => Date)
+  dueDate?: Date;
 
-    @IsOptional()
-    labels?: { name: string; color: string }[];
-    
-    @IsOptional()
-    reminderMinutes?: number | null; // ✅ REQUIRED
+  @IsOptional()
+  labels?: { name: string; color: string }[];
 
+  @IsOptional()
+  reminderMinutes?: number | null; // ✅ REQUIRED
 }

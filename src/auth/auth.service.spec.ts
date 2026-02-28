@@ -72,11 +72,7 @@ describe('AuthService', () => {
 
     userRepo.save.mockResolvedValue({ id: 1 } as User);
 
-    const result = await service.register(
-      'John',
-      'john@gmail.com',
-      '123456'
-    );
+    const result = await service.register('John', 'john@gmail.com', '123456');
 
     expect(bcrypt.hash).toHaveBeenCalledWith('123456', 10);
 
@@ -93,7 +89,7 @@ describe('AuthService', () => {
     userRepo.findOne.mockResolvedValue({ id: 1 } as User);
 
     await expect(
-      service.register('John', 'john@gmail.com', '123456')
+      service.register('John', 'john@gmail.com', '123456'),
     ).rejects.toThrow('User with this email already exists');
   });
 
@@ -129,9 +125,9 @@ describe('AuthService', () => {
   it('should throw if user not found', async () => {
     userRepo.findOne.mockResolvedValue(null);
 
-    await expect(
-      service.login('wrong@gmail.com', '123456')
-    ).rejects.toThrow('Invalid email or password');
+    await expect(service.login('wrong@gmail.com', '123456')).rejects.toThrow(
+      'Invalid email or password',
+    );
   });
 
   // ---------------- LOGIN PASSWORD INVALID ----------------
@@ -143,20 +139,20 @@ describe('AuthService', () => {
 
     (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-    await expect(
-      service.login('john@gmail.com', 'wrong')
-    ).rejects.toThrow('Invalid email or password');
+    await expect(service.login('john@gmail.com', 'wrong')).rejects.toThrow(
+      'Invalid email or password',
+    );
   });
 
   // ---------------- REFRESH SUCCESS ----------------
   it('should refresh successfully', async () => {
     jwtService.verify.mockReturnValue({ sub: 1 });
 
-   userService.findById.mockResolvedValue({
-  id: 1,
-  email: 'john@gmail.com',
-  refreshToken: 'hashedRefreshToken',
-} as unknown as User);
+    userService.findById.mockResolvedValue({
+      id: 1,
+      email: 'john@gmail.com',
+      refreshToken: 'hashedRefreshToken',
+    } as unknown as User);
 
     (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
@@ -199,7 +195,7 @@ describe('AuthService', () => {
       service.resetPassword({
         email: 'john@gmail.com',
         password: '123456',
-      })
+      }),
     ).rejects.toThrow('User not found');
   });
 });

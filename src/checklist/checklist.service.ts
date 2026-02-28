@@ -1,88 +1,84 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { ChecklistItem } from "./checklist-item.entity";
-import { Card } from "../card/card.entity";
-import { Checklist } from "./checklist.entity";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ChecklistItem } from './checklist-item.entity';
+import { Card } from '../card/card.entity';
+import { Checklist } from './checklist.entity';
 
 @Injectable()
 export class ChecklistService {
-    constructor(
-        @InjectRepository(Checklist)
-        private checklistRepo: Repository<Checklist>,
+  constructor(
+    @InjectRepository(Checklist)
+    private checklistRepo: Repository<Checklist>,
 
-        @InjectRepository(ChecklistItem)
-        private itemRepo: Repository<ChecklistItem>,
+    @InjectRepository(ChecklistItem)
+    private itemRepo: Repository<ChecklistItem>,
 
-        @InjectRepository(Card)
-        private cardRepo: Repository<Card>,
-    ) { }
+    @InjectRepository(Card)
+    private cardRepo: Repository<Card>,
+  ) {}
 
-    async createChecklist(cardId: number, title: string) {
-        const card = await this.cardRepo.findOne({
-
-            where: { id: cardId },
-        });
-        console.log("card", card)
-        if (!card) {
-            throw new NotFoundException(`Card ${cardId} not found`);
-        }
-
-        const checklist = this.checklistRepo.create({
-            title,
-            card,
-        });
-
-        const saved = await this.checklistRepo.save(checklist);
-
-        return this.checklistRepo.findOne({
-            where: { id: saved.id },
-            relations: ["card", "items"],   // 🔥 IMPORTANT
-        });
+  async createChecklist(cardId: number, title: string) {
+    const card = await this.cardRepo.findOne({
+      where: { id: cardId },
+    });
+    console.log('card', card);
+    if (!card) {
+      throw new NotFoundException(`Card ${cardId} not found`);
     }
 
+    const checklist = this.checklistRepo.create({
+      title,
+      card,
+    });
 
+    const saved = await this.checklistRepo.save(checklist);
 
-    async addItem(checklistId: number, text: string) {
-        const checklist = await this.checklistRepo.findOne({
-            where: { id: checklistId },
-        });
-        console.log("ADD ITEM checklistId:", checklistId);
+    return this.checklistRepo.findOne({
+      where: { id: saved.id },
+      relations: ['card', 'items'], // 🔥 IMPORTANT
+    });
+  }
 
-        console.log("checklist", checklist)
-        if (!checklist) {
-            throw new NotFoundException("Checklist not found");
-        }
+  async addItem(checklistId: number, text: string) {
+    const checklist = await this.checklistRepo.findOne({
+      where: { id: checklistId },
+    });
+    console.log('ADD ITEM checklistId:', checklistId);
 
-        const item = this.itemRepo.create({
-            text,
-            checklist,
-        });
-        console.log("item", item)
-
-        return this.itemRepo.save(item);
+    console.log('checklist', checklist);
+    if (!checklist) {
+      throw new NotFoundException('Checklist not found');
     }
 
-    async toggleItem(itemId: number) {
-        const item = await this.itemRepo.findOne({ where: { id: itemId } });
-        if (!item) throw new NotFoundException("Item not found");
+    const item = this.itemRepo.create({
+      text,
+      checklist,
+    });
+    console.log('item', item);
 
-        item.isCompleted = !item.isCompleted;
-        return this.itemRepo.save(item);
+    return this.itemRepo.save(item);
+  }
+
+  async toggleItem(itemId: number) {
+    const item = await this.itemRepo.findOne({ where: { id: itemId } });
+    if (!item) throw new NotFoundException('Item not found');
+
+    item.isCompleted = !item.isCompleted;
+    return this.itemRepo.save(item);
+  }
+
+  async deleteChecklist(checklistId: number) {
+    const checklist = await this.checklistRepo.findOne({
+      where: { id: checklistId },
+    });
+
+    if (!checklist) {
+      throw new NotFoundException('Checklist not found');
     }
 
-    async deleteChecklist(checklistId: number) {
-        const checklist = await this.checklistRepo.findOne({
-            where: { id: checklistId },
-        });
+    await this.checklistRepo.remove(checklist);
 
-        if (!checklist) {
-            throw new NotFoundException("Checklist not found");
-        }
-
-        await this.checklistRepo.remove(checklist);
-
-        return { id: checklistId };
-    }
-
+    return { id: checklistId };
+  }
 }

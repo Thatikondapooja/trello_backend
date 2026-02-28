@@ -85,10 +85,7 @@ describe('UserService', () => {
   it('should return false if user has no refresh token', async () => {
     const user = { id: 1, refreshToken: null };
 
-    const result = await service.validateRefreshToken(
-      'token',
-      user as User,
-    );
+    const result = await service.validateRefreshToken('token', user as User);
 
     expect(result).toBe(false);
   });
@@ -103,10 +100,7 @@ describe('UserService', () => {
       user as User,
     );
 
-    expect(bcrypt.compare).toHaveBeenCalledWith(
-      'plainToken',
-      'hashedToken',
-    );
+    expect(bcrypt.compare).toHaveBeenCalledWith('plainToken', 'hashedToken');
 
     expect(result).toBe(true);
   });

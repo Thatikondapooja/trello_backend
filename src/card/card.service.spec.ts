@@ -117,10 +117,7 @@ describe('CardsService', () => {
         id: 1,
         checklists: [
           {
-            items: [
-              { isCompleted: true },
-              { isCompleted: false },
-            ],
+            items: [{ isCompleted: true }, { isCompleted: false }],
           },
         ],
       },
@@ -172,8 +169,7 @@ describe('CardsService', () => {
   it('should throw if card not found', async () => {
     cardRepo.findOne.mockResolvedValue(null);
 
-    await expect(service.getCardById(1))
-      .rejects.toThrow(NotFoundException);
+    await expect(service.getCardById(1)).rejects.toThrow(NotFoundException);
   });
 
   /* ================= UPDATE CARD ================= */

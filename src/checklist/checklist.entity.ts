@@ -1,22 +1,28 @@
-import { Card } from "../card/card.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ChecklistItem } from "./checklist-item.entity";
+import { Card } from '../card/card.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ChecklistItem } from './checklist-item.entity';
 
 @Entity()
 export class Checklist {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    title: string;
+  @Column()
+  title: string;
 
-    @ManyToOne(() => Card, card => card.checklists, {
-        onDelete: "CASCADE",
-    })
-    card: Card;
+  @ManyToOne(() => Card, (card) => card.checklists, {
+    onDelete: 'CASCADE',
+  })
+  card: Card;
 
-    @OneToMany(() => ChecklistItem, item => item.checklist, {
-        cascade: true,
-    })
-    items: ChecklistItem[];
+  @OneToMany(() => ChecklistItem, (item) => item.checklist, {
+    cascade: true,
+  })
+  items: ChecklistItem[];
 }

@@ -53,8 +53,10 @@ describe('OtpController', () => {
 
     const result = await controller.sendOtp(dto as any);
 
-    expect(otpService.createAndSendOtp)
-      .toHaveBeenCalledWith(dto.email, dto.purpose);
+    expect(otpService.createAndSendOtp).toHaveBeenCalledWith(
+      dto.email,
+      dto.purpose,
+    );
 
     expect(result).toBeUndefined();
   });
@@ -81,11 +83,13 @@ describe('OtpController', () => {
 
     const result = await controller.verifyOtp(dto as any);
 
-    expect(otpService.verifyOtp)
-      .toHaveBeenCalledWith(dto.email, dto.otp, dto.purpose);
+    expect(otpService.verifyOtp).toHaveBeenCalledWith(
+      dto.email,
+      dto.otp,
+      dto.purpose,
+    );
 
-    expect(authService.issueTokensForUser)
-      .toHaveBeenCalledWith(mockUser);
+    expect(authService.issueTokensForUser).toHaveBeenCalledWith(mockUser);
 
     expect(result).toEqual({
       access_token: 'access123',

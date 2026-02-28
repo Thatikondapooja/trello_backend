@@ -1,18 +1,22 @@
 import { Module } from '@nestjs/common';
 import { Card } from './card.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { List } from "../list/list.entity";
-import { CardsService } from "./card.service";
-import { CardsController } from "./card.controller";
-import { ActivityModule } from "../activity/activity.module";
-import { User } from "../user/user.entity";
-import { CardReminderService } from "./card-reminder.service";
-import { MailModule } from "../mail/mail.module";
+import { List } from '../list/list.entity';
+import { CardsService } from './card.service';
+import { CardsController } from './card.controller';
+import { ActivityModule } from '../activity/activity.module';
+import { User } from '../user/user.entity';
+import { CardReminderService } from './card-reminder.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Card, List, User]), ActivityModule, MailModule],
-    controllers: [CardsController],
-    providers: [CardsService, CardReminderService],
-    exports: [TypeOrmModule],
+  imports: [
+    TypeOrmModule.forFeature([Card, List, User]),
+    ActivityModule,
+    MailModule,
+  ],
+  controllers: [CardsController],
+  providers: [CardsService, CardReminderService],
+  exports: [TypeOrmModule],
 })
-export class CardModule { }
+export class CardModule {}

@@ -126,11 +126,7 @@ describe('MailService', () => {
 
     service = new MailService();
 
-    await service.sendOtpEmail(
-      'test@mail.com',
-      '123456',
-      OtpPurpose.LOGIN,
-    );
+    await service.sendOtpEmail('test@mail.com', '123456', OtpPurpose.LOGIN);
 
     expect(mockSendMail).toHaveBeenCalled();
   });
@@ -157,10 +153,6 @@ describe('MailService', () => {
 
     service = new MailService();
 
-    await service.sendOtpEmail(
-      'test@mail.com',
-      '123456',
-      OtpPurpose.LOGIN,
-    );
+    await service.sendOtpEmail('test@mail.com', '123456', OtpPurpose.LOGIN);
   });
 });

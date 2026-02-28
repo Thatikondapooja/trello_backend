@@ -1,94 +1,111 @@
-import { Injectable } from "@nestjs/common";
-import * as https from "https";
-import * as nodemailer from "nodemailer";
-import { OtpPurpose } from "src/otp/otp.entity";
+import { Injectable } from '@nestjs/common';
+import * as https from 'https';
+import * as nodemailer from 'nodemailer';
+import { OtpPurpose } from 'src/otp/otp.entity';
 
 @Injectable()
 export class MailService {
   private transporter;
 
-
   constructor() {
     // Only initialize SMTP if we are NOT using the SendGrid API
     if (!process.env.SENDGRID_API_KEY && process.env.MAIL_USER) {
       this.transporter = nodemailer.createTransport({
-        service: "gmail",
+        service: 'gmail',
         auth: {
           user: process.env.MAIL_USER,
           pass: process.env.MAIL_PASS,
         },
       });
-      console.log("🚀 Mail Service (SMTP Fallback Mode) Initialized");
+      console.log('🚀 Mail Service (SMTP Fallback Mode) Initialized');
     } else {
-      console.log("🚀 Mail Service (SendGrid API Mode) Initialized");
+      console.log('🚀 Mail Service (SendGrid API Mode) Initialized');
     }
   }
 
-  async sendReminderEmail(to: string, cardTitle: string, dueDate: Date): Promise<boolean> {
+  async sendReminderEmail(
+    to: string,
+    cardTitle: string,
+    dueDate: Date,
+  ): Promise<boolean> {
     const apiKey = process.env.SENDGRID_API_KEY;
 
     // --- MODE 1: SENDGRID API (Best for Production/Render) ---
     if (apiKey) {
-      console.log("📧 Sending email via SendGrid API to:", to);
+      console.log('📧 Sending email via SendGrid API to:', to);
       return this.sendViaSendGrid(apiKey, to, cardTitle, dueDate);
     }
 
     // --- MODE 2: GMAIL SMTP (Best for Local Development) ---
     if (this.transporter) {
-      console.log("📧 Sending email via Gmail SMTP to:", to);
+      console.log('📧 Sending email via Gmail SMTP to:', to);
       try {
         await this.transporter.sendMail({
           from: `"Trello Clone" <${process.env.MAIL_USER}>`,
           to,
-          subject: "⏰ Card Reminder",
+          subject: '⏰ Card Reminder',
           html: this.getHtmlContent(cardTitle, dueDate),
         });
-        console.log("✅ Email sent successfully via SMTP");
+        console.log('✅ Email sent successfully via SMTP');
         return true;
       } catch (error) {
-        console.error("❌ SMTP Error:", error);
+        console.error('❌ SMTP Error:', error);
         return false;
       }
     }
 
-    console.error("❌ No email configuration found (Need SENDGRID_API_KEY or MAIL_USER/PASS)");
+    console.error(
+      '❌ No email configuration found (Need SENDGRID_API_KEY or MAIL_USER/PASS)',
+    );
     return false;
   }
 
-  private sendViaSendGrid(apiKey: string, to: string, cardTitle: string, dueDate: Date): Promise<boolean> {
+  private sendViaSendGrid(
+    apiKey: string,
+    to: string,
+    cardTitle: string,
+    dueDate: Date,
+  ): Promise<boolean> {
     const html = this.getHtmlContent(cardTitle, dueDate);
-    const subject = "⏰ Card Reminder";
+    const subject = '⏰ Card Reminder';
     return this.sendRawViaSendGrid(apiKey, to, subject, html);
   }
 
-  private sendRawViaSendGrid(apiKey: string, to: string, subject: string, html: string): Promise<boolean> {
+  private sendRawViaSendGrid(
+    apiKey: string,
+    to: string,
+    subject: string,
+    html: string,
+  ): Promise<boolean> {
     const data = JSON.stringify({
       personalizations: [{ to: [{ email: to }] }],
-      from: { email: "thatikondapooja888@gmail.com", name: "Trello Clone" },
+      from: { email: 'thatikondapooja888@gmail.com', name: 'Trello Clone' },
       subject: subject,
-      content: [{ type: "text/html", value: html }],
+      content: [{ type: 'text/html', value: html }],
     });
 
     const options = {
-      hostname: "api.sendgrid.com",
+      hostname: 'api.sendgrid.com',
       port: 443,
-      path: "/v3/mail/send",
-      method: "POST",
+      path: '/v3/mail/send',
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
-        "Content-Length": Buffer.byteLength(data),
+        'Content-Length': Buffer.byteLength(data),
       },
     };
 
     return new Promise((resolve) => {
       const req = https.request(options, (res) => {
-        let responseBody = "";
-        res.on("data", (chunk) => { responseBody += chunk; });
+        let responseBody = '';
+        res.on('data', (chunk) => {
+          responseBody += chunk;
+        });
 
-        res.on("end", () => {
+        res.on('end', () => {
           if (res.statusCode === 202) {
-            console.log("✅ Email sent successfully via SendGrid API");
+            console.log('✅ Email sent successfully via SendGrid API');
             resolve(true);
           } else {
             console.error(`❌ SendGrid API Error: ${res.statusCode}`);
@@ -98,8 +115,8 @@ export class MailService {
         });
       });
 
-      req.on("error", (err) => {
-        console.error("❌ API Connection Error:", err);
+      req.on('error', (err) => {
+        console.error('❌ API Connection Error:', err);
         resolve(false);
       });
 
@@ -121,8 +138,6 @@ export class MailService {
       </div>
     `;
   }
-
-
 
   async sendOtpEmail(to: string, otp: string, purpose: OtpPurpose) {
     if (!to) throw new Error('Recipient email is required');
@@ -150,8 +165,11 @@ export class MailService {
         <div style="font-family: Arial, sans-serif; background-color: #f6f8fa; padding: 24px;">
           <div style="max-width: 480px; margin: auto; background: #ffffff; padding: 24px; border-radius: 8px;">
             
-            <h2 style="color: #1a73e8; margin-bottom: 16px;">${purpose === OtpPurpose.FORGOT_PASSWORD ? 'Password Reset OTP' : 'Login Verification'
-      }</h2>
+            <h2 style="color: #1a73e8; margin-bottom: 16px;">${
+              purpose === OtpPurpose.FORGOT_PASSWORD
+                ? 'Password Reset OTP'
+                : 'Login Verification'
+            }</h2>
 
             ${message}
 
@@ -187,7 +205,7 @@ export class MailService {
     const apiKey = process.env.SENDGRID_API_KEY;
 
     if (apiKey) {
-      console.log("📧 Sending OTP email via SendGrid API to:", to);
+      console.log('📧 Sending OTP email via SendGrid API to:', to);
       const success = await this.sendRawViaSendGrid(apiKey, to, subject, html);
       if (success) {
         console.log(`✅ OTP email sent via SendGrid to ${to}`);
@@ -198,16 +216,20 @@ export class MailService {
     }
 
     if (this.transporter) {
-      console.log("📧 Sending OTP email via SMTP to:", to);
+      console.log('📧 Sending OTP email via SMTP to:', to);
       await this.transporter.sendMail({
         from: `"YourApp Security" <${process.env.MAIL_USER}>`,
         to,
         subject,
         html,
       });
-      console.log(`✅ OTP email sent via SMTP to ${to} with purpose: ${purpose}`);
+      console.log(
+        `✅ OTP email sent via SMTP to ${to} with purpose: ${purpose}`,
+      );
     } else {
-      console.error("❌ No email configuration found for OTP (Need SENDGRID_API_KEY or MAIL_USER/PASS)");
+      console.error(
+        '❌ No email configuration found for OTP (Need SENDGRID_API_KEY or MAIL_USER/PASS)',
+      );
     }
   }
 }

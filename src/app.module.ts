@@ -1,6 +1,6 @@
-import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigModule } from "@nestjs/config";
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { BoardController } from './board/board.controller';
 import { BoardService } from './board/board.service';
@@ -12,23 +12,22 @@ import { CardsController } from './card/card.controller';
 import { CardsService } from './card/card.service';
 import { CardModule } from './card/card.module';
 import { ActivityModule } from './activity/activity.module';
-import { AppController } from "./app.controller";
-import { AppService } from "./app.service";
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
-import { ScheduleModule } from "@nestjs/schedule";
+import { ScheduleModule } from '@nestjs/schedule';
 import { MailModule } from './mail/mail.module';
 import { ChecklistModule } from './checklist/checklist.module';
 import { OtpModule } from './otp/otp.module';
-
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: 'postgres',
       url: process.env.DATABASE_URL, // ✅ PREFER THIS FOR RENDER
       host: process.env.DB_HOST,
       port: Number(process.env.DB_PORT) || 5432,
@@ -37,7 +36,10 @@ import { OtpModule } from './otp/otp.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true, // dev only
-      ssl: (process.env.DATABASE_URL || process.env.RENDER) ? { rejectUnauthorized: false } : false,
+      ssl:
+        process.env.DATABASE_URL || process.env.RENDER
+          ? { rejectUnauthorized: false }
+          : false,
     }),
 
     UserModule,
@@ -57,12 +59,8 @@ import { OtpModule } from './otp/otp.module';
     ChecklistModule,
 
     OtpModule,
-
-
-
-
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

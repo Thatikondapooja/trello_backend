@@ -2,9 +2,9 @@ import { IsEmail, IsEnum } from 'class-validator';
 import { OtpPurpose } from './otp.entity';
 
 export class SendOtpDto {
-    @IsEmail()
-    email: string;
+  @IsEmail()
+  email: string;
 
-    @IsEnum(OtpPurpose)
-    purpose: OtpPurpose;
+  @IsEnum(OtpPurpose)
+  purpose: OtpPurpose;
 }

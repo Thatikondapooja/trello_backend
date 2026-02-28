@@ -1,34 +1,38 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from "@nestjs/common";
-import { JwtAuthGuard } from "../auth/JwtAuthGuard";
-import { BoardService } from "./board.service";
-import { CreateBoardDto } from "./createBoardDto";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/JwtAuthGuard';
+import { BoardService } from './board.service';
+import { CreateBoardDto } from './createBoardDto';
 
-@Controller("boards")
+@Controller('boards')
 @UseGuards(JwtAuthGuard)
 export class BoardController {
-   constructor(private readonly boardService: BoardService) { }
+  constructor(private readonly boardService: BoardService) {}
 
-   /* CREATE BOARD */
-   @Post()
-   createBoard(
-      @Body() body: CreateBoardDto,
-      @Req() req: any
-   ) {
-      console.log("🚀 BACKEND: Creating board for userId:", req.user.userId);
-      return this.boardService.createBoard(body, req.user.userId);
-   }
+  /* CREATE BOARD */
+  @Post()
+  createBoard(@Body() body: CreateBoardDto, @Req() req: any) {
+    console.log('🚀 BACKEND: Creating board for userId:', req.user.userId);
+    return this.boardService.createBoard(body, req.user.userId);
+  }
 
-   /* GET USER BOARDS */
-   @Get("getboards")
-   getBoards(@Req() req: any) {
-      const userId = req.user.userId;
-      console.log("🚀 BACKEND: Fetching boards for userId:", userId);
-      return this.boardService.getBoards(userId);
-   }
+  /* GET USER BOARDS */
+  @Get('getboards')
+  getBoards(@Req() req: any) {
+    const userId = req.user.userId;
+    console.log('🚀 BACKEND: Fetching boards for userId:', userId);
+    return this.boardService.getBoards(userId);
+  }
 
-   @Get(":boardId/members")
-   getBoardMembers(@Param("boardId") boardId: number) {
-      return this.boardService.getBoardMembers(boardId);
-   }
-
+  @Get(':boardId/members')
+  getBoardMembers(@Param('boardId') boardId: number) {
+    return this.boardService.getBoardMembers(boardId);
+  }
 }

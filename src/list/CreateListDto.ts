@@ -1,9 +1,9 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateListDto {
-    @IsNotEmpty()
-    title: string;
+  @IsNotEmpty()
+  title: string;
 
-    @IsNumber()
-    boardId: number;
+  @IsNumber()
+  boardId: number;
 }

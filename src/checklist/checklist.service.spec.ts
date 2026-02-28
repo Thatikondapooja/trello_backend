@@ -76,9 +76,9 @@ describe('ChecklistService', () => {
   it('should throw if card not found', async () => {
     cardRepo.findOne.mockResolvedValue(null);
 
-    await expect(
-      service.createChecklist(1, 'Test Checklist'),
-    ).rejects.toThrow(NotFoundException);
+    await expect(service.createChecklist(1, 'Test Checklist')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   /* ================= ADD ITEM ================= */
@@ -108,9 +108,9 @@ describe('ChecklistService', () => {
   it('should throw if checklist not found while adding item', async () => {
     checklistRepo.findOne.mockResolvedValue(null);
 
-    await expect(
-      service.addItem(5, 'New Item'),
-    ).rejects.toThrow(NotFoundException);
+    await expect(service.addItem(5, 'New Item')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   /* ================= TOGGLE ITEM ================= */
@@ -132,9 +132,7 @@ describe('ChecklistService', () => {
   it('should throw if item not found while toggling', async () => {
     itemRepo.findOne.mockResolvedValue(null);
 
-    await expect(
-      service.toggleItem(1),
-    ).rejects.toThrow(NotFoundException);
+    await expect(service.toggleItem(1)).rejects.toThrow(NotFoundException);
   });
 
   /* ================= DELETE CHECKLIST ================= */
@@ -154,8 +152,6 @@ describe('ChecklistService', () => {
   it('should throw if checklist not found while deleting', async () => {
     checklistRepo.findOne.mockResolvedValue(null);
 
-    await expect(
-      service.deleteChecklist(5),
-    ).rejects.toThrow(NotFoundException);
+    await expect(service.deleteChecklist(5)).rejects.toThrow(NotFoundException);
   });
 });

@@ -1,5 +1,5 @@
-import { IsEmail, IsEnum, IsNotEmpty, Length } from "class-validator";
-import { OtpPurpose } from "./otp.entity";
+import { IsEmail, IsEnum, IsNotEmpty, Length } from 'class-validator';
+import { OtpPurpose } from './otp.entity';
 
 export class VerifyOtpDto {
   @IsEmail()
