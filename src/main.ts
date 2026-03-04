@@ -64,14 +64,22 @@ async function bootstrap() {
   //   allowedHeaders: ['Content-Type', 'Authorization'],
   // });
 
-  app.enableCors({
-  origin: [
-    'http://localhost:3001',
-    'http://127.0.0.1:3001',
-    'https://trello-clone-pooja.vercel.app',
-  ],
+app.enableCors({
+  origin: (origin, callback) => {
+    if (
+      !origin ||
+      origin.includes("vercel.app") ||
+      origin.includes("localhost")
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
-});
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+});;
 
   app.useGlobalPipes(
     new ValidationPipe({
