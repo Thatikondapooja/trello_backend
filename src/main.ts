@@ -43,13 +43,13 @@ async function bootstrap() {
 
   const isProd = process.env.NODE_ENV === 'production';
 
-  const LOCAL_ORIGINS = [
-    'http://localhost:3001',
-    'http://127.0.0.1:3001',
-    'http://192.168.31.94:3001',
-  ];
+  // const LOCAL_ORIGINS = [
+  //   'http://localhost:3001',
+  //   'http://127.0.0.1:3001',
+  //   'http://192.168.31.94:3001',
+  // ];
 
-  const PROD_ORIGIN = 'https://trello-clone-pooja.vercel.app';
+  // const PROD_ORIGIN = 'https://trello-clone-pooja.vercel.app';
 
   app.use(
     helmet({
@@ -57,12 +57,21 @@ async function bootstrap() {
     }),
   );
 
+  // app.enableCors({
+  //   origin: isProd ? PROD_ORIGIN : LOCAL_ORIGINS,
+  //   credentials: true,
+  //   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  //   allowedHeaders: ['Content-Type', 'Authorization'],
+  // });
+
   app.enableCors({
-    origin: isProd ? PROD_ORIGIN : LOCAL_ORIGINS,
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  origin: [
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    'https://trello-clone-pooja.vercel.app',
+  ],
+  credentials: true,
+});
 
   app.useGlobalPipes(
     new ValidationPipe({
