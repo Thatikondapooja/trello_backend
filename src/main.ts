@@ -70,8 +70,7 @@ app.enableCors({
       !origin ||
       origin.includes("vercel.app") ||
       origin.includes("localhost") ||
-      origin.includes("nip.io")   // ⭐ add this
-    ) {
+      origin.includes("trycloudflare.com")) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
