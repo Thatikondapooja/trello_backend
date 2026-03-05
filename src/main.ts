@@ -69,7 +69,8 @@ app.enableCors({
     if (
       !origin ||
       origin.includes("vercel.app") ||
-      origin.includes("localhost")
+      origin.includes("localhost") ||
+      origin.includes("nip.io")   // ⭐ add this
     ) {
       callback(null, true);
     } else {
@@ -79,7 +80,7 @@ app.enableCors({
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-});;
+});
 
   app.useGlobalPipes(
     new ValidationPipe({
