@@ -17,7 +17,7 @@ async function bootstrap() {
     "https://trello-clone-pooja.vercel.app",
     "http://localhost:3001"
   ],
-  credentials: true,
+  credentials: false,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 });
