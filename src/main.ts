@@ -64,18 +64,25 @@ async function bootstrap() {
   //   allowedHeaders: ['Content-Type', 'Authorization'],
   // });
 
+// app.enableCors({
+//   origin: (origin, callback) => {
+//     if (
+//       !origin ||
+//       origin.includes("vercel.app") ||
+//       origin.includes("localhost") ||
+//       origin.includes("trycloudflare.com")) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// });
+
 app.enableCors({
-  origin: (origin, callback) => {
-    if (
-      !origin ||
-      origin.includes("vercel.app") ||
-      origin.includes("localhost") ||
-      origin.includes("trycloudflare.com")) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: true,
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
