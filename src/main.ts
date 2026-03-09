@@ -12,15 +12,10 @@ async function bootstrap() {
     }),
   );
 
- app.enableCors({
-  origin: [
-    "https://trello-clone-pooja.vercel.app",
-    "http://localhost:3001",
-    /\.trycloudflare\.com$/   // allow Cloudflare tunnel
-  ],
-  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+app.enableCors({
+  origin: true,
+  methods: ["GET","HEAD","PUT","PATCH","POST","DELETE","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"],
-  credentials: false
 });
 
   app.useGlobalPipes(
